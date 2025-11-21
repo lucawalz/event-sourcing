@@ -1644,18 +1644,10 @@ class: text-center
   Fragen? Diskussion? Feedback?
 </div>
 
-<div mt-12 flex justify-center gap-8>
+<div mt-12 flex justify-center>
   <div v-click flex flex-col items-center>
-    <div i-carbon:email text-4xl mb-2 />
-    <div text-sm opacity-70>ihre.email@example.com</div>
-  </div>
-  <div v-click flex flex-col items-center>
-    <div i-ri:github-fill text-4xl mb-2 />
-    <div text-sm opacity-70>github.com/username</div>
-  </div>
-  <div v-click flex flex-col items-center>
-    <div i-carbon:logo-linkedin text-4xl mb-2 />
-    <div text-sm opacity-70>linkedin.com/in/username</div>
+    <div i-ri:github-fill text-5xl mb-3 />
+    <div text-base opacity-80>github.com/lucawalz/event-sourcing</div>
   </div>
 </div>
 

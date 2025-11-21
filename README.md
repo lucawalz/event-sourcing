@@ -22,15 +22,6 @@ npm run export  # Export to PDF
 npm run build   # Build static site
 ```
 
-## Deploy to GitHub Pages
-
-The presentation automatically deploys to GitHub Pages when you push to the main branch.
-
-Setup:
-1. Go to repository Settings → Pages
-2. Select "GitHub Actions" as the source
-3. Push to main branch
-
 Manual build:
 ```bash
 ./deploy.sh
