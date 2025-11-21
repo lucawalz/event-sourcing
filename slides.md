@@ -205,46 +205,46 @@ glowSeed: 150
 
 <span>Ein fundamental anderer Ansatz zur Datenspeicherung</span>
 
-<div mt-6 />
+<div mt-4 />
 
 <div
   v-click
   border="2 solid green-800" bg="green-800/20"
-  rounded-lg p-6 mb-6
+  rounded-lg p-4 mb-4
 >
-  <div flex items-center gap-3 mb-4>
-    <div i-carbon:document-tasks text-green-300 text-3xl />
+  <div flex items-center gap-2 mb-2>
+    <div i-carbon:document-tasks text-green-300 text-2xl />
     <div>
-      <div font-bold text-xl>Definition</div>
-      <div text-sm opacity-70 mt-1>Alle Änderungen am Application State werden als Sequenz von Events gespeichert</div>
+      <div font-bold text-lg>Definition</div>
+      <div text-xs opacity-70 mt-1>Alle Änderungen am Application State werden als Sequenz von Events gespeichert</div>
     </div>
   </div>
-  <div bg="green-900/30" rounded-lg p-4>
-    <div text-sm>
+  <div bg="green-900/30" rounded-lg p-3>
+    <div text-xs>
       <span font-semibold>Die Events sind unser 'System of Record'</span> - die einzige Quelle der Wahrheit. Statt den aktuellen Zustand zu überschreiben, speichern wir jede Zustandsänderung als separates, unveränderliches Event.
     </div>
   </div>
 </div>
 
-<div grid grid-cols-2 gap-6>
+<div grid grid-cols-2 gap-4>
   <div
     v-click
     border="2 solid red-800" bg="red-800/20"
     rounded-lg overflow-hidden
   >
-    <div bg="red-800/40" px-4 py-2 flex items-center>
-      <div i-carbon:close text-red-300 text-xl mr-2 />
-      <span font-bold>Traditionelles System</span>
+    <div bg="red-800/40" px-3 py-1.5 flex items-center>
+      <div i-carbon:close text-red-300 text-lg mr-2 />
+      <span font-bold text-sm>Traditionelles System</span>
     </div>
-    <div px-4 py-3>
-      <div font-mono text-xs bg="black/30" rounded-lg p-3>
+    <div px-3 py-2>
+      <div font-mono text-xs bg="black/30" rounded-lg p-2>
         <div text-blue-300>// Ship Object</div>
         <div>location = "San Francisco"</div>
-        <div mt-2 text-yellow-300>// Ship moves</div>
+        <div mt-1 text-yellow-300>// Ship moves</div>
         <div>location = "Hong Kong"</div>
-        <div mt-2 text-red-400>// Previous location lost!</div>
+        <div mt-1 text-red-400>// Previous location lost!</div>
       </div>
-      <div mt-3 flex items-center gap-2 text-sm text-red-300>
+      <div mt-2 flex items-center gap-2 text-xs text-red-300>
         <div i-carbon:warning-alt />
         <span>Historie überschrieben</span>
       </div>
@@ -256,22 +256,22 @@ glowSeed: 150
     border="2 solid green-800" bg="green-800/20"
     rounded-lg overflow-hidden
   >
-    <div bg="green-800/40" px-4 py-2 flex items-center>
-      <div i-carbon:checkmark-outline text-green-300 text-xl mr-2 />
-      <span font-bold>Event Sourcing</span>
+    <div bg="green-800/40" px-3 py-1.5 flex items-center>
+      <div i-carbon:checkmark-outline text-green-300 text-lg mr-2 />
+      <span font-bold text-sm>Event Sourcing</span>
     </div>
-    <div px-4 py-3>
-      <div font-mono text-xs bg="black/30" rounded-lg p-3>
+    <div px-3 py-2>
+      <div font-mono text-xs bg="black/30" rounded-lg p-2>
         <div text-green-300>// Event Stream</div>
         <div>Event 1: ShipDepartedFrom</div>
         <div>  location: "San Francisco"</div>
         <div>  time: 10:00</div>
-        <div mt-2>Event 2: ShipArrivedAt</div>
+        <div mt-1>Event 2: ShipArrivedAt</div>
         <div>  location: "Hong Kong"</div>
         <div>  time: 15:00</div>
-        <div mt-2 text-green-400>// All events preserved!</div>
+        <div mt-1 text-green-400>// All events preserved!</div>
       </div>
-      <div mt-3 flex items-center gap-2 text-sm text-green-300>
+      <div mt-2 flex items-center gap-2 text-xs text-green-300>
         <div i-carbon:checkmark-outline />
         <span>Vollständige Historie</span>
       </div>
@@ -312,7 +312,7 @@ glowSeed: 200
 
 <span>Die vier Säulen des Patterns</span>
 
-<div mt-6 />
+<div mt-3 />
 
 <div grid grid-cols-2 gap-4>
   <div
@@ -322,20 +322,20 @@ glowSeed: 200
     transition duration-500 ease-in-out
     :class="$clicks < 1 ? 'opacity-0 translate-y-20' : 'opacity-100 translate-y-0'"
   >
-    <div bg="blue-800/40" px-4 py-2 flex items-center>
-      <div i-carbon:document text-blue-300 text-xl mr-2 />
-      <span font-bold>1. Events</span>
+    <div bg="blue-800/40" px-3 py-1.5 flex items-center>
+      <div i-carbon:document text-blue-300 text-lg mr-2 />
+      <span font-bold text-sm>1. Events</span>
     </div>
-    <div px-4 py-3>
-      <div text-sm mb-2>Unveränderbare Fakten über etwas, das passiert IST</div>
-      <div font-mono text-xs bg="black/30" rounded-lg p-2 mb-2>
+    <div px-3 py-2>
+      <div text-xs mb-1.5>Unveränderbare Fakten über etwas, das passiert IST</div>
+      <div font-mono text-xs bg="black/30" rounded-lg p-1.5 mb-1.5>
         <div text-green-400>✅ OrderPlaced</div>
         <div text-green-400>✅ PaymentReceived</div>
         <div text-green-400>✅ ItemShipped</div>
-        <div mt-1 text-red-400>❌ PlaceOrder (Command!)</div>
+        <div mt-0.5 text-red-400>❌ PlaceOrder (Command!)</div>
       </div>
       <div text-xs opacity-70>
-        Enthalten: Event-Typ, Timestamp, Aggregate-ID, Event-Daten, Metadaten
+        Event-Typ, Timestamp, Aggregate-ID, Daten, Metadaten
       </div>
     </div>
   </div>
@@ -347,22 +347,22 @@ glowSeed: 200
     transition duration-500 ease-in-out
     :class="$clicks < 2 ? 'opacity-0 translate-y-20' : 'opacity-100 translate-y-0'"
   >
-    <div bg="purple-800/40" px-4 py-2 flex items-center>
-      <div i-carbon:data-base text-purple-300 text-xl mr-2 />
-      <span font-bold>2. Event Store</span>
+    <div bg="purple-800/40" px-3 py-1.5 flex items-center>
+      <div i-carbon:data-base text-purple-300 text-lg mr-2 />
+      <span font-bold text-sm>2. Event Store</span>
     </div>
-    <div px-4 py-3>
-      <div text-sm mb-2>Append-Only Log - wie ein Hauptbuch</div>
-      <div flex items-center gap-2 mb-2>
+    <div px-3 py-2>
+      <div text-xs mb-1.5>Append-Only Log - wie ein Hauptbuch</div>
+      <div flex items-center gap-2 mb-1>
         <div i-carbon:add text-green-400 />
         <span text-xs>Nur hinzufügen</span>
       </div>
-      <div flex items-center gap-2 mb-2>
+      <div flex items-center gap-2 mb-1>
         <div i-carbon:close text-red-400 />
         <span text-xs>Niemals ändern oder löschen</span>
       </div>
-      <div text-xs opacity-70 mt-2>
-        Implementierungen: EventStore DB, Kafka, Cosmos DB, PostgreSQL
+      <div text-xs opacity-70 mt-1>
+        EventStore DB, Kafka, Cosmos DB, PostgreSQL
       </div>
     </div>
   </div>
@@ -374,18 +374,18 @@ glowSeed: 200
     transition duration-500 ease-in-out
     :class="$clicks < 3 ? 'opacity-0 translate-y-20' : 'opacity-100 translate-y-0'"
   >
-    <div bg="green-800/40" px-4 py-2 flex items-center>
-      <div i-carbon:view text-green-300 text-xl mr-2 />
-      <span font-bold>3. Projektionen / Read Models</span>
+    <div bg="green-800/40" px-3 py-1.5 flex items-center>
+      <div i-carbon:view text-green-300 text-lg mr-2 />
+      <span font-bold text-sm>3. Projektionen / Read Models</span>
     </div>
-    <div px-4 py-3>
-      <div text-sm mb-2>Materialisierte Ansichten des aktuellen Zustands</div>
-      <div font-mono text-xs bg="black/30" rounded-lg p-2>
+    <div px-3 py-2>
+      <div text-xs mb-1.5>Materialisierte Ansichten des aktuellen Zustands</div>
+      <div font-mono text-xs bg="black/30" rounded-lg p-1.5>
         <div>Events → Projektion</div>
         <div>→ Read Model (SQL/NoSQL)</div>
       </div>
-      <div text-xs opacity-70 mt-2>
-        Ermöglicht schnelle Queries ohne Event Replay
+      <div text-xs opacity-70 mt-1>
+        Schnelle Queries ohne Event Replay
       </div>
     </div>
   </div>
@@ -397,13 +397,13 @@ glowSeed: 200
     transition duration-500 ease-in-out
     :class="$clicks < 4 ? 'opacity-0 translate-y-20' : 'opacity-100 translate-y-0'"
   >
-    <div bg="yellow-800/40" px-4 py-2 flex items-center>
-      <div i-carbon:replay text-yellow-300 text-xl mr-2 />
-      <span font-bold>4. Event Replay</span>
+    <div bg="yellow-800/40" px-3 py-1.5 flex items-center>
+      <div i-carbon:replay text-yellow-300 text-lg mr-2 />
+      <span font-bold text-sm>4. Event Replay</span>
     </div>
-    <div px-4 py-3>
-      <div text-sm mb-2>Die Superkraft von Event Sourcing</div>
-      <div flex flex-col gap-1 text-xs>
+    <div px-3 py-2>
+      <div text-xs mb-1.5>Die Superkraft von Event Sourcing</div>
+      <div flex flex-col gap-0.5 text-xs>
         <div flex items-center gap-2>
           <div i-carbon:checkmark-outline text-green-400 />
           <span>Complete Rebuild</span>
@@ -469,26 +469,26 @@ glowSeed: 175
 
 <span>Wichtige Abgrenzung zweier verwandter Konzepte</span>
 
-<div mt-6 />
+<div mt-3 />
 
-<div grid grid-cols-2 gap-6>
+<div grid grid-cols-2 gap-4>
   <div
     v-click
     border="2 solid cyan-800" bg="cyan-800/20"
     rounded-lg overflow-hidden
   >
-    <div bg="cyan-800/40" px-4 py-2 flex items-center>
-      <div i-carbon:network-3 text-cyan-300 text-xl mr-2 />
-      <span font-bold>Event-Driven Architecture</span>
+    <div bg="cyan-800/40" px-3 py-1.5 flex items-center>
+      <div i-carbon:network-3 text-cyan-300 text-lg mr-2 />
+      <span font-bold text-sm>Event-Driven Architecture</span>
     </div>
-    <div px-4 py-3>
-      <div text-sm mb-3>Kommunikationsmuster zwischen Services</div>
-      <div font-mono text-xs bg="black/30" rounded-lg p-3 mb-3>
+    <div px-3 py-2>
+      <div text-xs mb-2>Kommunikationsmuster zwischen Services</div>
+      <div font-mono text-xs bg="black/30" rounded-lg p-2 mb-2>
         <div>Service A → OrderPlaced</div>
         <div>Service B ← subscribes</div>
         <div>Service C ← subscribes</div>
       </div>
-      <div flex flex-col gap-2 text-xs>
+      <div flex flex-col gap-1 text-xs>
         <div flex items-center gap-2>
           <div i-carbon:checkmark-outline text-green-400 />
           <span>Lose Kopplung</span>
@@ -510,18 +510,18 @@ glowSeed: 175
     border="2 solid green-800" bg="green-800/20"
     rounded-lg overflow-hidden
   >
-    <div bg="green-800/40" px-4 py-2 flex items-center>
-      <div i-carbon:data-base text-green-300 text-xl mr-2 />
-      <span font-bold>Event Sourcing</span>
+    <div bg="green-800/40" px-3 py-1.5 flex items-center>
+      <div i-carbon:data-base text-green-300 text-lg mr-2 />
+      <span font-bold text-sm>Event Sourcing</span>
     </div>
-    <div px-4 py-3>
-      <div text-sm mb-3>Persistenzmuster innerhalb eines Service</div>
-      <div font-mono text-xs bg="black/30" rounded-lg p-3 mb-3>
+    <div px-3 py-2>
+      <div text-xs mb-2>Persistenzmuster innerhalb eines Service</div>
+      <div font-mono text-xs bg="black/30" rounded-lg p-2 mb-2>
         <div>Command → Event</div>
         <div>Event → Event Store</div>
         <div>Event Store → State</div>
       </div>
-      <div flex flex-col gap-2 text-xs>
+      <div flex flex-col gap-1 text-xs>
         <div flex items-center gap-2>
           <div i-carbon:checkmark-outline text-green-400 />
           <span>Datenspeicherung</span>
@@ -541,29 +541,29 @@ glowSeed: 175
 
 <div
   v-click
-  mt-6 border="2 solid indigo-800" bg="indigo-800/20"
+  mt-4 border="2 solid indigo-800" bg="indigo-800/20"
   rounded-lg overflow-hidden
 >
-  <div bg="indigo-800/40" px-4 py-2 flex items-center>
-    <div i-carbon:connection-signal text-indigo-300 text-xl mr-2 />
-    <span font-bold>CQRS - Command Query Responsibility Segregation</span>
+  <div bg="indigo-800/40" px-3 py-1.5 flex items-center>
+    <div i-carbon:connection-signal text-indigo-300 text-lg mr-2 />
+    <span font-bold text-sm>CQRS - Command Query Responsibility Segregation</span>
   </div>
-  <div px-4 py-3 grid grid-cols-2 gap-4>
+  <div px-3 py-2 grid grid-cols-2 gap-3>
     <div>
-      <div font-semibold text-sm mb-2>Write Side</div>
-      <div font-mono text-xs bg="black/30" rounded-lg p-2>
+      <div font-semibold text-xs mb-1>Write Side</div>
+      <div font-mono text-xs bg="black/30" rounded-lg p-1.5>
         <div>Commands → Events</div>
         <div>→ Event Store</div>
       </div>
     </div>
     <div>
-      <div font-semibold text-sm mb-2>Read Side</div>
-      <div font-mono text-xs bg="black/30" rounded-lg p-2>
+      <div font-semibold text-xs mb-1>Read Side</div>
+      <div font-mono text-xs bg="black/30" rounded-lg p-1.5>
         <div>Events → Projektionen</div>
         <div>→ Read Models</div>
       </div>
     </div>
-    <div col-span-2 text-xs opacity-70 mt-2>
+    <div col-span-2 text-xs opacity-70 mt-1>
       Trennung ermöglicht separate Skalierung, führt aber zu Eventual Consistency
     </div>
   </div>
@@ -599,30 +599,30 @@ glowSeed: 220
 
 <span>Ein praktisches Beispiel für Event Sourcing</span>
 
-<div mt-6 />
+<div mt-3 />
 
-<div grid grid-cols-2 gap-6>
+<div grid grid-cols-2 gap-4>
   <div
     v-click
     border="2 solid blue-800" bg="blue-800/20"
     rounded-lg overflow-hidden
   >
-    <div bg="blue-800/40" px-4 py-2 flex items-center>
-      <div i-carbon:shopping-cart text-blue-300 text-xl mr-2 />
-      <span font-bold>Warum dieses Beispiel?</span>
+    <div bg="blue-800/40" px-3 py-1.5 flex items-center>
+      <div i-carbon:shopping-cart text-blue-300 text-lg mr-2 />
+      <span font-bold text-sm>Warum dieses Beispiel?</span>
     </div>
-    <div px-4 py-3 flex flex-col gap-2>
+    <div px-3 py-2 flex flex-col gap-1.5>
       <div flex items-center gap-2>
         <div i-carbon:checkmark-outline text-green-400 />
-        <span text-sm>Audit-Anforderungen</span>
+        <span text-xs>Audit-Anforderungen</span>
       </div>
       <div flex items-center gap-2>
         <div i-carbon:checkmark-outline text-green-400 />
-        <span text-sm>Komplexe Zustandsübergänge</span>
+        <span text-xs>Komplexe Zustandsübergänge</span>
       </div>
       <div flex items-center gap-2>
         <div i-carbon:checkmark-outline text-green-400 />
-        <span text-sm>Mehrere Akteure (Customer, Warehouse, Payment)</span>
+        <span text-xs>Mehrere Akteure (Customer, Warehouse, Payment)</span>
       </div>
     </div>
   </div>
@@ -632,12 +632,12 @@ glowSeed: 220
     border="2 solid green-800" bg="green-800/20"
     rounded-lg overflow-hidden
   >
-    <div bg="green-800/40" px-4 py-2 flex items-center>
-      <div i-carbon:document text-green-300 text-xl mr-2 />
-      <span font-bold>Event-Typen</span>
+    <div bg="green-800/40" px-3 py-1.5 flex items-center>
+      <div i-carbon:document text-green-300 text-lg mr-2 />
+      <span font-bold text-sm>Event-Typen</span>
     </div>
-    <div px-4 py-3>
-      <div font-mono text-xs bg="black/30" rounded-lg p-2>
+    <div px-3 py-2>
+      <div font-mono text-xs bg="black/30" rounded-lg p-1.5>
         <div text-green-400>OrderCreated</div>
         <div text-blue-400>ItemAddedToOrder</div>
         <div text-yellow-400>PaymentReceived</div>
@@ -650,47 +650,47 @@ glowSeed: 220
 
 <div
   v-click
-  mt-6 border="2 solid purple-800" bg="purple-800/20"
+  mt-4 border="2 solid purple-800" bg="purple-800/20"
   rounded-lg overflow-hidden
 >
-  <div bg="purple-800/40" px-4 py-2 flex items-center>
-    <div i-carbon:event-schedule text-purple-300 text-xl mr-2 />
-    <span font-bold>Event Stream Beispiel</span>
+  <div bg="purple-800/40" px-3 py-1.5 flex items-center>
+    <div i-carbon:event-schedule text-purple-300 text-lg mr-2 />
+    <span font-bold text-sm>Event Stream Beispiel</span>
   </div>
-  <div px-4 py-3>
-    <div font-mono text-sm bg="black/30" rounded-lg p-4>
-      <div flex items-center gap-3>
+  <div px-3 py-2>
+    <div font-mono text-xs bg="black/30" rounded-lg p-2>
+      <div flex items-center gap-2>
         <span text-zinc-500>10:00</span>
         <div i-carbon:arrow-right text-green-400 />
         <span text-green-400>OrderCreated</span>
         <span text-zinc-400>(orderId: 123, customer: "Martin")</span>
       </div>
-      <div flex items-center gap-3 mt-2>
+      <div flex items-center gap-2 mt-1>
         <span text-zinc-500>10:01</span>
         <div i-carbon:arrow-right text-blue-400 />
         <span text-blue-400>ItemAdded</span>
         <span text-zinc-400>(orderId: 123, product: "Laptop", qty: 1)</span>
       </div>
-      <div flex items-center gap-3 mt-2>
+      <div flex items-center gap-2 mt-1>
         <span text-zinc-500>10:02</span>
         <div i-carbon:arrow-right text-blue-400 />
         <span text-blue-400>ItemAdded</span>
         <span text-zinc-400>(orderId: 123, product: "Mouse", qty: 1)</span>
       </div>
-      <div flex items-center gap-3 mt-2>
+      <div flex items-center gap-2 mt-1>
         <span text-zinc-500>10:05</span>
         <div i-carbon:arrow-right text-yellow-400 />
         <span text-yellow-400>PaymentReceived</span>
         <span text-zinc-400>(orderId: 123, amount: 1050€)</span>
       </div>
-      <div flex items-center gap-3 mt-2>
+      <div flex items-center gap-2 mt-1>
         <span text-zinc-500>11:00</span>
         <div i-carbon:arrow-right text-purple-400 />
         <span text-purple-400>OrderShipped</span>
         <span text-zinc-400>(orderId: 123, tracking: "DHL123")</span>
       </div>
     </div>
-    <div mt-3 text-xs opacity-70 flex items-center gap-2>
+    <div mt-2 text-xs opacity-70 flex items-center gap-2>
       <div i-carbon:locked text-green-400 />
       <span>Jedes Event ist unveränderlich und trägt alle nötigen Informationen</span>
     </div>
@@ -733,11 +733,11 @@ glowSeed: 250
 
 <span>Implementierung der Grundbausteine</span>
 
-<div mt-4></div>
+<div mt-2></div>
 
-<div grid="~ cols-2 gap-4">
+<div grid="~ cols-2 gap-3">
   <div v-click>
-    <div text-sm font-semibold mb-2>Event Definition</div>
+    <div text-xs font-semibold mb-1>Event Definition</div>
 
 ```java
 // Base Event
@@ -766,7 +766,7 @@ public class OrderCreatedEvent extends DomainEvent {
   </div>
 
   <div v-click>
-    <div text-sm font-semibold mb-2>Event Store mit Concurrency Control</div>
+    <div text-xs font-semibold mb-1>Event Store mit Concurrency Control</div>
 
 ```java
 public interface EventStore {
@@ -796,11 +796,11 @@ public class OrderService {
   </div>
 </div>
 
-<div v-click mt-4 bg="yellow-800/20" border="2 solid yellow-800" rounded-lg p-3>
+<div v-click mt-2 bg="yellow-800/20" border="2 solid yellow-800" rounded-lg p-2>
   <div flex items-center gap-2>
-    <div i-carbon:warning-alt text-yellow-300 text-xl></div>
-    <span font-semibold>Kritisch:</span>
-    <span text-sm>expectedVersion verhindert konkurrierende Schreibvorgänge - ähnlich wie Optimistic Locking</span>
+    <div i-carbon:warning-alt text-yellow-300 text-lg></div>
+    <span font-semibold text-xs>Kritisch:</span>
+    <span text-xs>expectedVersion verhindert konkurrierende Schreibvorgänge - ähnlich wie Optimistic Locking</span>
   </div>
 </div>
 
@@ -826,11 +826,11 @@ glowSeed: 275
 
 <span>Vom Event Stream zum aktuellen Zustand</span>
 
-<div mt-4></div>
+<div mt-2></div>
 
-<div grid="~ cols-2 gap-4">
+<div grid="~ cols-2 gap-3">
   <div v-click>
-    <div text-sm font-semibold mb-2>Event Replay Pattern</div>
+    <div text-xs font-semibold mb-1>Event Replay Pattern</div>
 
 ```java
 public class Order {
@@ -838,9 +838,7 @@ public class Order {
     private String customerId;
     private List<OrderItem> items = new ArrayList<>();
     private OrderStatus status;
-    private long version = 0;
     
-    // Reconstruct from events
     public static Order fromEvents(List<DomainEvent> events) {
         Order order = new Order();
         for (DomainEvent event : events) {
@@ -849,18 +847,17 @@ public class Order {
         return order;
     }
     
-    // Apply single event
     private void apply(DomainEvent event) {
         if (event instanceof OrderCreatedEvent e) {
             this.orderId = e.getAggregateId();
             this.customerId = e.getCustomerId();
             this.status = OrderStatus.CREATED;
         } else if (event instanceof ItemAddedEvent e) {
-            this.items.add(new OrderItem(e.getProductId(), e.getQuantity()));
+            this.items.add(new OrderItem(
+                e.getProductId(), e.getQuantity()));
         } else if (event instanceof OrderShippedEvent e) {
             this.status = OrderStatus.SHIPPED;
         }
-        this.version++;
     }
 }
 ```
@@ -868,7 +865,7 @@ public class Order {
   </div>
 
   <div v-click>
-    <div text-sm font-semibold mb-2>Snapshots für Performance</div>
+    <div text-xs font-semibold mb-1>Snapshots für Performance</div>
 
 ```java
 // Snapshot
@@ -894,9 +891,9 @@ public Order getById(UUID orderId) {
 }
 ```
 
-<div mt-3 bg="green-800/20" border="2 solid green-800" rounded-lg p-3>
+<div mt-2 bg="green-800/20" border="2 solid green-800" rounded-lg p-2>
   <div text-xs>
-    <div flex items-center gap-2 mb-1>
+    <div flex items-center gap-2 mb-0.5>
       <div i-carbon:idea text-green-300></div>
       <span font-semibold>Performance-Optimierung</span>
     </div>
@@ -1114,24 +1111,24 @@ glowSeed: 325
 
 <span>Event Sourcing in Microservices</span>
 
-<div mt-4 />
+<div mt-2 />
 
-<div grid grid-cols-2 gap-6>
+<div grid grid-cols-2 gap-4>
   <div
     v-click
     border="2 solid red-800" bg="red-800/20"
     rounded-lg overflow-hidden
   >
-    <div bg="red-800/40" px-4 py-2 flex items-center>
-      <div i-carbon:warning-alt text-red-300 text-xl mr-2 />
-      <span font-bold>Das Problem</span>
+    <div bg="red-800/40" px-3 py-1.5 flex items-center>
+      <div i-carbon:warning-alt text-red-300 text-lg mr-2 />
+      <span font-bold text-sm>Das Problem</span>
     </div>
-    <div px-4 py-3>
-      <div text-sm mb-3>
+    <div px-3 py-2>
+      <div text-xs mb-2>
         Wie koordinieren wir Transaktionen über mehrere Services hinweg?
       </div>
-      <div bg="red-900/30" rounded-lg p-3 text-xs>
-        <div flex items-center gap-2 mb-1>
+      <div bg="red-900/30" rounded-lg p-2 text-xs>
+        <div flex items-center gap-2 mb-0.5>
           <div i-carbon:close text-red-400 />
           <span>Verteilte ACID-Transaktionen zu langsam</span>
         </div>
@@ -1148,17 +1145,17 @@ glowSeed: 325
     border="2 solid green-800" bg="green-800/20"
     rounded-lg overflow-hidden
   >
-    <div bg="green-800/40" px-4 py-2 flex items-center>
-      <div i-carbon:checkmark-outline text-green-300 text-xl mr-2 />
-      <span font-bold>Die Lösung: Saga</span>
+    <div bg="green-800/40" px-3 py-1.5 flex items-center>
+      <div i-carbon:checkmark-outline text-green-300 text-lg mr-2 />
+      <span font-bold text-sm>Die Lösung: Saga</span>
     </div>
-    <div px-4 py-3>
-      <div text-sm mb-3>
+    <div px-3 py-2>
+      <div text-xs mb-2>
         Sequenz von lokalen Transaktionen, koordiniert über Events
       </div>
-      <div bg="green-900/30" rounded-lg p-3 text-xs>
+      <div bg="green-900/30" rounded-lg p-2 text-xs>
         <div>Bei Fehler: Kompensierende Transaktionen</div>
-        <div mt-2 text-yellow-300>
+        <div mt-1 text-yellow-300>
           ⚠️ Kompensationen sind NEUE Events, nicht Rückgängig-machen!
         </div>
       </div>
@@ -1166,37 +1163,37 @@ glowSeed: 325
   </div>
 </div>
 
-<div v-click mt-4 grid grid-cols-2 gap-4>
+<div v-click mt-3 grid grid-cols-2 gap-3>
   <div border="2 solid blue-800" bg="blue-800/20" rounded-lg overflow-hidden>
-    <div bg="blue-800/40" px-3 py-2 font-bold text-sm>Erfolgsfall</div>
-    <div px-3 py-3>
-      <div font-mono text-xs bg="black/30" rounded-lg p-2>
+    <div bg="blue-800/40" px-2 py-1 font-bold text-xs>Erfolgsfall</div>
+    <div px-2 py-2>
+      <div font-mono text-xs bg="black/30" rounded-lg p-1.5>
         <div text-green-400>1. OrderCreated</div>
         <div text-green-400>2. PaymentProcessed</div>
         <div text-green-400>3. ItemsShipped</div>
-        <div mt-2 text-zinc-500>✓ Alles erfolgreich</div>
+        <div mt-1 text-zinc-500>✓ Alles erfolgreich</div>
       </div>
     </div>
   </div>
 
   <div border="2 solid yellow-800" bg="yellow-800/20" rounded-lg overflow-hidden>
-    <div bg="yellow-800/40" px-3 py-2 font-bold text-sm>Fehlerfall mit Kompensation</div>
-    <div px-3 py-3>
-      <div font-mono text-xs bg="black/30" rounded-lg p-2>
+    <div bg="yellow-800/40" px-2 py-1 font-bold text-xs>Fehlerfall mit Kompensation</div>
+    <div px-2 py-2>
+      <div font-mono text-xs bg="black/30" rounded-lg p-1.5>
         <div text-green-400>1. OrderCreated</div>
         <div text-green-400>2. PaymentProcessed</div>
         <div text-red-400>3. ShippingFailed ❌</div>
-        <div mt-2 text-yellow-400>→ PaymentRefunded</div>
+        <div mt-1 text-yellow-400>→ PaymentRefunded</div>
         <div text-yellow-400>→ OrderCancelled</div>
       </div>
     </div>
   </div>
 </div>
 
-<div v-click mt-4 grid grid-cols-2 gap-4>
-  <div border="2 solid purple-800" bg="purple-800/20" rounded-lg p-3>
-    <div font-bold text-sm mb-2>Choreographie</div>
-    <div text-xs opacity-70 mb-2>Services reagieren auf Events</div>
+<div v-click mt-3 grid grid-cols-2 gap-3>
+  <div border="2 solid purple-800" bg="purple-800/20" rounded-lg p-2>
+    <div font-bold text-xs mb-1>Choreographie</div>
+    <div text-xs opacity-70 mb-1>Services reagieren auf Events</div>
     <div flex items-center gap-2 text-xs>
       <div i-carbon:checkmark-outline text-green-400 />
       <span>Dezentral, lose gekoppelt</span>
@@ -1207,9 +1204,9 @@ glowSeed: 325
     </div>
   </div>
 
-  <div border="2 solid indigo-800" bg="indigo-800/20" rounded-lg p-3>
-    <div font-bold text-sm mb-2>Orchestrierung</div>
-    <div text-xs opacity-70 mb-2>Saga-Koordinator steuert zentral</div>
+  <div border="2 solid indigo-800" bg="indigo-800/20" rounded-lg p-2>
+    <div font-bold text-xs mb-1>Orchestrierung</div>
+    <div text-xs opacity-70 mb-1>Saga-Koordinator steuert zentral</div>
     <div flex items-center gap-2 text-xs>
       <div i-carbon:checkmark-outline text-green-400 />
       <span>Leichter zu verstehen</span>
@@ -1263,43 +1260,43 @@ glowSeed: 350
 
 <span>Tools, Frameworks und der pragmatische Ansatz</span>
 
-<div mt-4 />
+<div mt-2 />
 
-<div grid grid-cols-2 gap-6>
+<div grid grid-cols-2 gap-4>
   <div
     v-click
     border="2 solid blue-800" bg="blue-800/20"
     rounded-lg overflow-hidden
   >
-    <div bg="blue-800/40" px-4 py-2 flex items-center>
-      <div i-carbon:tools text-blue-300 text-xl mr-2 />
-      <span font-bold>Frameworks & Tools</span>
+    <div bg="blue-800/40" px-3 py-1.5 flex items-center>
+      <div i-carbon:tools text-blue-300 text-lg mr-2 />
+      <span font-bold text-sm>Frameworks & Tools</span>
     </div>
-    <div px-4 py-3 flex flex-col gap-2>
+    <div px-3 py-2 flex flex-col gap-1.5>
       <div flex items-center gap-2>
-        <div i-logos:java text-xl />
-        <div text-sm>
+        <div i-logos:java text-lg />
+        <div text-xs>
           <span font-semibold>Axon Framework</span>
           <div text-xs opacity-70>Full-featured CQRS + Event Sourcing</div>
         </div>
       </div>
       <div flex items-center gap-2>
-        <div i-carbon:data-base text-purple-300 text-xl />
-        <div text-sm>
+        <div i-carbon:data-base text-purple-300 text-lg />
+        <div text-xs>
           <span font-semibold>EventStore DB</span>
           <div text-xs opacity-70>Spezialisierte Event-Datenbank</div>
         </div>
       </div>
       <div flex items-center gap-2>
-        <div i-logos:kafka text-xl />
-        <div text-sm>
+        <div i-carbon:flow-stream text-orange-400 text-lg />
+        <div text-xs>
           <span font-semibold>Kafka + Streams</span>
           <div text-xs opacity-70>Distributed Event Log</div>
         </div>
       </div>
       <div flex items-center gap-2>
-        <div i-carbon:cloud text-blue-300 text-xl />
-        <div text-sm>
+        <div i-carbon:cloud text-blue-300 text-lg />
+        <div text-xs>
           <span font-semibold>Azure Cosmos DB</span>
           <div text-xs opacity-70>NoSQL mit Change Feed</div>
         </div>
@@ -1312,36 +1309,36 @@ glowSeed: 350
     border="2 solid green-800" bg="green-800/20"
     rounded-lg overflow-hidden
   >
-    <div bg="green-800/40" px-4 py-2 flex items-center>
-      <div i-carbon:industry text-green-300 text-xl mr-2 />
-      <span font-bold>Industrie-Beispiele</span>
+    <div bg="green-800/40" px-3 py-1.5 flex items-center>
+      <div i-carbon:industry text-green-300 text-lg mr-2 />
+      <span font-bold text-sm>Industrie-Beispiele</span>
     </div>
-    <div px-4 py-3 flex flex-col gap-2>
+    <div px-3 py-2 flex flex-col gap-1.5>
       <div>
-        <div flex items-center gap-2 mb-1>
+        <div flex items-center gap-2 mb-0.5>
           <div i-carbon:finance text-yellow-300 />
-          <span font-semibold text-sm>Banking</span>
+          <span font-semibold text-xs>Banking</span>
         </div>
         <div text-xs opacity-70>Transaktionshistorie mit vollständigem Audit-Trail</div>
       </div>
       <div>
-        <div flex items-center gap-2 mb-1>
+        <div flex items-center gap-2 mb-0.5>
           <div i-carbon:shopping-cart text-green-300 />
-          <span font-semibold text-sm>E-Commerce</span>
+          <span font-semibold text-xs>E-Commerce</span>
         </div>
         <div text-xs opacity-70>Order Management & Customer Support</div>
       </div>
       <div>
-        <div flex items-center gap-2 mb-1>
+        <div flex items-center gap-2 mb-0.5>
           <div i-carbon:iot-platform text-blue-300 />
-          <span font-semibold text-sm>IoT-Systeme</span>
+          <span font-semibold text-xs>IoT-Systeme</span>
         </div>
         <div text-xs opacity-70>Sensor-Daten als Time-Series</div>
       </div>
       <div>
-        <div flex items-center gap-2 mb-1>
+        <div flex items-center gap-2 mb-0.5>
           <div i-carbon:game-console text-purple-300 />
-          <span font-semibold text-sm>Gaming</span>
+          <span font-semibold text-xs>Gaming</span>
         </div>
         <div text-xs opacity-70>Player State History & Replay</div>
       </div>
@@ -1349,36 +1346,36 @@ glowSeed: 350
   </div>
 </div>
 
-<div v-click mt-6 bg="yellow-800/20" border="2 solid yellow-800" rounded-lg overflow-hidden>
-  <div bg="yellow-800/40" px-4 py-2 flex items-center>
-    <div i-carbon:idea text-yellow-300 text-xl mr-2 />
-    <span font-bold>Der pragmatische Ansatz: Bounded Contexts</span>
+<div v-click mt-4 bg="yellow-800/20" border="2 solid yellow-800" rounded-lg overflow-hidden>
+  <div bg="yellow-800/40" px-3 py-1.5 flex items-center>
+    <div i-carbon:idea text-yellow-300 text-lg mr-2 />
+    <span font-bold text-sm>Der pragmatische Ansatz: Bounded Contexts</span>
   </div>
-  <div px-4 py-3 grid grid-cols-2 gap-4>
+  <div px-3 py-2 grid grid-cols-2 gap-3>
     <div>
-      <div flex items-center gap-2 mb-2>
-        <div i-carbon:checkmark-outline text-green-400 text-xl />
-        <span font-semibold text-sm>RICHTIG</span>
+      <div flex items-center gap-2 mb-1>
+        <div i-carbon:checkmark-outline text-green-400 text-lg />
+        <span font-semibold text-xs>RICHTIG</span>
       </div>
-      <div bg="green-900/30" rounded-lg p-3 text-xs>
-        <div mb-1>Event Sourcing in spezifischen Bounded Contexts:</div>
+      <div bg="green-900/30" rounded-lg p-2 text-xs>
+        <div mb-0.5>Event Sourcing in spezifischen Bounded Contexts:</div>
         <div>• Banking → nur Transaktions-Service</div>
         <div>• E-Commerce → nur Order-Service</div>
       </div>
     </div>
     <div>
-      <div flex items-center gap-2 mb-2>
-        <div i-carbon:close text-red-400 text-xl />
-        <span font-semibold text-sm>FALSCH</span>
+      <div flex items-center gap-2 mb-1>
+        <div i-carbon:close text-red-400 text-lg />
+        <span font-semibold text-xs>FALSCH</span>
       </div>
-      <div bg="red-900/30" rounded-lg p-3 text-xs>
-        <div mb-1>Komplettes System auf Event Sourcing:</div>
+      <div bg="red-900/30" rounded-lg p-2 text-xs>
+        <div mb-0.5>Komplettes System auf Event Sourcing:</div>
         <div>• User-Profile-Service? → CRUD reicht!</div>
         <div>• Product-Catalog? → CRUD reicht!</div>
       </div>
     </div>
   </div>
-  <div px-4 pb-3 text-sm opacity-80>
+  <div px-3 pb-2 text-xs opacity-80>
     Nutzt Event Sourcing dort, wo Audit-Trail kritisch ist - nicht überall!
   </div>
 </div>
@@ -1425,34 +1422,34 @@ glowSeed: 375
 
 <span>Bewusst nutzen, nicht dogmatisch</span>
 
-<div mt-6 />
+<div mt-3 />
 
-<div grid grid-cols-2 gap-6>
+<div grid grid-cols-2 gap-4>
   <div
     v-click
     border="2 solid green-800" bg="green-800/20"
     rounded-lg overflow-hidden
   >
-    <div bg="green-800/40" px-4 py-2 flex items-center>
-      <div i-carbon:checkmark-outline text-green-300 text-xl mr-2 />
-      <span font-bold>Wann JA?</span>
+    <div bg="green-800/40" px-3 py-1.5 flex items-center>
+      <div i-carbon:checkmark-outline text-green-300 text-lg mr-2 />
+      <span font-bold text-sm>Wann JA?</span>
     </div>
-    <div px-4 py-3 flex flex-col gap-2>
+    <div px-3 py-2 flex flex-col gap-1.5>
       <div flex items-center gap-2>
         <div i-carbon:document-tasks text-green-400 />
-        <span text-sm>Hohe Audit-Anforderungen (Banking, Healthcare)</span>
+        <span text-xs>Hohe Audit-Anforderungen (Banking, Healthcare)</span>
       </div>
       <div flex items-center gap-2>
         <div i-carbon:time text-green-400 />
-        <span text-sm>Historie ist kritisch (Compliance, Debugging)</span>
+        <span text-xs>Historie ist kritisch (Compliance, Debugging)</span>
       </div>
       <div flex items-center gap-2>
         <div i-carbon:flow text-green-400 />
-        <span text-sm>Komplexe Domains mit Event-basierten Workflows</span>
+        <span text-xs>Komplexe Domains mit Event-basierten Workflows</span>
       </div>
       <div flex items-center gap-2>
         <div i-carbon:cube text-green-400 />
-        <span text-sm>In spezifischen Bounded Contexts</span>
+        <span text-xs>In spezifischen Bounded Contexts</span>
       </div>
     </div>
   </div>
@@ -1462,37 +1459,37 @@ glowSeed: 375
     border="2 solid red-800" bg="red-800/20"
     rounded-lg overflow-hidden
   >
-    <div bg="red-800/40" px-4 py-2 flex items-center>
-      <div i-carbon:close text-red-300 text-xl mr-2 />
-      <span font-bold>Wann NEIN?</span>
+    <div bg="red-800/40" px-3 py-1.5 flex items-center>
+      <div i-carbon:close text-red-300 text-lg mr-2 />
+      <span font-bold text-sm>Wann NEIN?</span>
     </div>
-    <div px-4 py-3 flex flex-col gap-2>
+    <div px-3 py-2 flex flex-col gap-1.5>
       <div flex items-center gap-2>
         <div i-carbon:close text-red-400 />
-        <span text-sm>Als Standard-Speichermethode für alle Daten</span>
+        <span text-xs>Als Standard-Speichermethode für alle Daten</span>
       </div>
       <div flex items-center gap-2>
         <div i-carbon:close text-red-400 />
-        <span text-sm>Für einfache CRUD-Anwendungen</span>
+        <span text-xs>Für einfache CRUD-Anwendungen</span>
       </div>
       <div flex items-center gap-2>
         <div i-carbon:close text-red-400 />
-        <span text-sm>Wenn Team nicht bereit für Komplexität</span>
+        <span text-xs>Wenn Team nicht bereit für Komplexität</span>
       </div>
       <div flex items-center gap-2>
         <div i-carbon:close text-red-400 />
-        <span text-sm>System-wide ohne klaren Nutzen</span>
+        <span text-xs>System-wide ohne klaren Nutzen</span>
       </div>
     </div>
   </div>
 </div>
 
-<div v-click mt-6 bg="blue-800/20" border="2 solid blue-800" rounded-lg p-4>
-  <div flex items-center gap-3>
-    <div i-carbon:idea text-blue-300 text-3xl />
+<div v-click mt-4 bg="blue-800/20" border="2 solid blue-800" rounded-lg p-3>
+  <div flex items-center gap-2>
+    <div i-carbon:idea text-blue-300 text-2xl />
     <div>
-      <div font-bold text-lg>Kernaussagen</div>
-      <div text-sm opacity-80 mt-2 flex flex-col gap-1>
+      <div font-bold text-base>Kernaussagen</div>
+      <div text-xs opacity-80 mt-1 flex flex-col gap-0.5>
         <div>• Events sind unveränderlich und bilden die Single Source of Truth</div>
         <div>• Ermöglicht Audit-Trails, Temporal Queries und Event Replay</div>
         <div>• Trade-off: Auditability & Flexibilität vs. Komplexität</div>
@@ -1502,10 +1499,10 @@ glowSeed: 375
   </div>
 </div>
 
-<div v-click mt-4 bg="yellow-800/20" border="2 solid yellow-800" rounded-lg p-3>
+<div v-click mt-3 bg="yellow-800/20" border="2 solid yellow-800" rounded-lg p-2>
   <div flex items-center gap-2>
-    <div i-carbon:warning-alt text-yellow-300 text-xl />
-    <span text-sm>
+    <div i-carbon:warning-alt text-yellow-300 text-lg />
+    <span text-xs>
       <span font-semibold>Fowler's Warnung:</span> "Es ist schwer, das später zu retrofiten. Aber für die meisten Systeme ist die Komplexität nicht gerechtfertigt."
     </span>
   </div>
@@ -1537,10 +1534,8 @@ Mein Fazit: Nutzt es bewusst in spezifischen Bounded Contexts, nicht system-wide
 -->
 
 ---
-
 layout: center
 class: text-center
-
 ---
 
 # Diskussion
@@ -1600,10 +1595,8 @@ Manche argumentieren: Warum nicht einfach Change Data Capture nutzen? DB-Logs ge
 -->
 
 ---
-
 layout: center
 class: text-center
-
 ---
 
 # Quellenverzeichnis
@@ -1641,10 +1634,8 @@ class: text-center
 </div>
 
 ---
-
 layout: center
 class: text-center
-
 ---
 
 # Vielen Dank!
