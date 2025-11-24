@@ -192,7 +192,7 @@ Das wird zum Problem in mehreren Szenarien:
 - Banking: Regulatorische Anforderungen - Banken MÜSSEN jeden Kontowechsel nachweisen können
 - E-Commerce: Customer Support - 'Herr Müller beschwert sich, dass seine Bestellung nie ankam' - was ist passiert?
 - Healthcare: Audit Trail - Wer hat wann welche Medikamentendosis geändert?
-- Compliance: GDPR, SOX - Nachweispflicht über Datenänderungen
+- Compliance: GDPR = protects personal data and privacy (EU), SOX = ensures financial reporting integrity (US) - Nachweispflicht über Datenänderungen
 
 **Zentrale Frage (30 Sek):**
 Die zentrale Frage ist also: Wie können wir nicht nur SEHEN wo wir sind, sondern auch verstehen, WIE wir dorthin gekommen sind?
@@ -571,23 +571,26 @@ glowSeed: 175
 
 <!--
 **Einordnung (30 Sek):**
-Bevor wir ins Code-Beispiel gehen, wichtige Abgrenzung: Event Sourcing ist NICHT das gleiche wie Event-Driven Architecture, wird aber oft verwechselt.
+Bevor wir weitermachen, müssen wir ein häufiges Missverständnis klären. Event Sourcing und Event-Driven Architecture (EDA) klingen ähnlich, lösen aber unterschiedliche Probleme.
 
 **Event-Driven Architecture (30 Sek):**
-Event-Driven Architecture ist ein Kommunikationsmuster zwischen Services. Services kommunizieren über Events - z.B. 'OrderPlaced' wird published, andere Services reagieren darauf.
-
-Wichtig: Dazu gibt es einen eigenen Vortrag am 05.12., daher hier nur kurz: EDA = Kommunikation, Event Sourcing = Persistenz.
-[Quelle: Stopford unterscheidet zwischen "Event Collaboration" (EDA) und "Event Sourcing" (Persistenz)]
+EDA ist ein *Kommunikationsmuster*. Es geht darum, wie Services miteinander sprechen. Ein Service ruft "OrderPlaced!", und andere reagieren darauf.
+Wichtig: Dazu gibt es am 05.12. einen eigenen Deep-Dive Vortrag.
+Merkt euch für heute nur die Faustregel:
+- EDA = Kommunikation zwischen Services (Integration)
+- Event Sourcing = Persistenz innerhalb eines Services (State Management)
+[Quelle: Stopford unterscheidet "Event Collaboration" vs "Event Sourcing"]
 
 **CQRS Connection (45 Sek):**
-Event Sourcing wird oft mit CQRS kombiniert - Command Query Responsibility Segregation. Die Idee: Write-Model und Read-Model trennen.
+Event Sourcing kommt selten allein. Der beste Freund von Event Sourcing ist CQRS (Command Query Responsibility Segregation).
+Warum? Weil der Event Store super zum Schreiben ist (einfach anhängen), aber furchtbar zum Lesen (wer will schon 1000 Events replayen, nur um den Kontostand zu sehen?).
 
-Mit Event Sourcing:
-- Commands erzeugen Events → Event Store (Write Side)
-- Events werden projiziert → Read Models (Query Side)
+Deshalb trennen wir:
+1. **Write Side:** Commands (z.B. "Buche Geld ab") erzeugen Events im Event Store.
+2. **Read Side:** Wir bauen aus den Events optimierte Lese-Modelle (Projektionen).
 
-Diese Trennung bringt Performance-Vorteile durch separate Skalierung, führt aber zu Eventual Consistency.
-[Quelle: Microsoft CQRS Pattern; Wolff Video zu CQRS & Event Sourcing]
+Das erlaubt uns, beide Seiten getrennt zu skalieren, bringt aber "Eventual Consistency" mit sich – die Lese-Seite hinkt immer ein paar Millisekunden hinterher.
+[Quelle: Microsoft CQRS Pattern; Wolff Video]
 -->
 
 ---
@@ -700,13 +703,20 @@ public OrderView getById(UUID id) {
 
 <!--
 **CQRS Deep Dive (60 Sek):**
-Hier sehen wir das Prinzip im Detail.
+Hier sehen wir, wie die Magie technisch funktioniert.
 
-Links die Write Side: Hier passiert die Musik. Validierung, Business Rules, State Changes. Wir optimieren auf Konsistenz und Verhalten.
+**Links: Die Write Side (Das Gehirn)**
+Hier wird gearbeitet. Wenn ein Command reinkommt (z.B. "Bestellung aufgeben"), prüfen wir die Regeln: Ist genug Ware da? Ist das Konto gedeckt?
+Wenn alles passt, speichern wir *nur* das Event. Wir schreiben nicht in Tabellen, wir hängen nur an das Log an. Das ist extrem schnell.
 
-Rechts die Read Side: Hier wollen wir nur schnell Daten lesen. Keine Joins, keine komplexen Berechnungen zur Laufzeit. Die Daten liegen so, wie der Client sie braucht (z.B. als flaches JSON Document).
+**Rechts: Die Read Side (Das Gedächtnis)**
+Hier wird nur abgerufen. Die "Projektionen" haben die Arbeit schon erledigt und die Daten mundgerecht vorbereitet.
+Wenn die App fragt "Zeig mir die Bestellung", muss die Datenbank nicht erst 5 Tabellen joinen. Das fertige JSON liegt schon bereit.
+Das Ergebnis: Lesezugriffe im Millisekunden-Bereich, egal wie komplex die Daten eigentlich sind.
 
-Der Clou: Wir können beide Seiten unabhängig skalieren. Viele Reads? Skaliere die Read-Side. Komplexe Logik? Skaliere die Write-Side.
+**Der Clou:**
+Wir entkoppeln Schreiben und Lesen komplett.
+Black Friday Sale? Millionen Leute lesen Produkte (Read Side skaliert hoch), aber nur wenige kaufen gleichzeitig (Write Side bleibt entspannt).
 -->
 
 ---
@@ -924,16 +934,15 @@ public class OrderService {
 </div>
 
 <!--
-**Event Definition (60 Sek):**
-Zunächst definieren wir Events als einfache Datenklassen:
-
-Wichtig: Events sind immutable - keine Setter! Alle Daten werden im Konstruktor gesetzt.
+**Event Definition (Links):**
+Schauen wir auf den Code links. Wir sehen die Klasse `OrderCreatedEvent`.
+Wichtig sind hier die `final` Felder. Events sind unveränderliche Fakten. Es gibt keine Setter. Einmal passiert, bleibt es so.
+Wir speichern hier nur die Daten, die für das Event relevant sind: `customerId` und `items`.
 
 **Event Store mit Concurrency Control (90 Sek):**
 Der Event Store ist Append Only - aber mit einer wichtigen Ergänzung für Concurrency Control:
 
-Kritisch: expectedVersion verhindert konkurrierende Schreibvorgänge - ähnlich wie Optimistic Locking in traditionellen Systemen. Wenn zwei Prozesse gleichzeitig schreiben, schlägt einer fehl.
-[Quelle: Stopford, Chapter 11: "Identity and Concurrency Control"]
+Kritisch: expectedVersion verhindert konkurrierende Schreibvorgänge - ähnlich wie Optimistic Locking in traditionellen Systemen. Wenn zwei Prozesse gleichzeitig schreiben, schlägt einer fehl. [Quelle: Stopford, Chapter 11: "Identity and Concurrency Control"]
 -->
 
 ---
@@ -1026,15 +1035,21 @@ public Order getById(UUID orderId) {
 </div>
 
 <!--
-**Konzept (30 Sek):**
-Um den aktuellen Zustand zu erhalten, spielen wir alle Events ab. Das nennt man Event Replay oder Rehydration.
-
-**Code - Apply Pattern (90 Sek):**
-Jedes Event wird sequenziell auf den State angewendet. Am Ende haben wir den aktuellen Zustand.
+**State Reconstruction (Links):**
+Links sehen wir, wie wir aus Events wieder ein Objekt machen.
+Die Methode `fromEvents` ist der Einstieg. Sie erstellt eine leere `Order` und iteriert über die Events.
+Das Herzstück ist die `apply` Methode darunter.
+Hier ist ein Switch (oder if/else) über den Event-Typ.
+- Bei `OrderCreated` setzen wir die ID.
+- Bei `ItemAdded` fügen wir was zur Liste hinzu.
+Wichtig: Hier passiert keine Validierung mehr! Das Event IST ja schon passiert. Wir updaten nur den State.
 [Quelle: Fowler: Event processing logic in domain model]
 
-**Snapshots für Performance (60 Sek):**
-Bei tausenden Events wäre es langsam, alle abzuspielen. Deswegen nutzt man Snapshots - man speichert den State periodisch und spielt nur neuere Events ab.
+**Snapshots (Rechts):**
+Rechts die Performance-Optimierung.
+In `getById` laden wir erst den `OrderSnapshot` (Zeile 1010).
+Dann laden wir nur die Events *nach* der Version des Snapshots (`getEvents(..., snapshot.version)`).
+Wir sparen uns also das Abspielen von tausenden alten Events und müssen nur die wenigen neuen anwenden.
 [Quelle: Fowler: "Application State Storage"]
 -->
 
@@ -1689,27 +1704,22 @@ Vielen Dank für eure Aufmerksamkeit! Jetzt ist eure Zeit. Ich habe einige Disku
 1. Banking-System Use Case (2-3 Min)
 Stellt euch vor, ihr entwickelt ein Banking-System. Würdet ihr für das gesamte System oder nur für bestimmte Teile Event Sourcing einsetzen? Warum oder warum nicht?
 
-2. GDPR & Immutable Events (2-3 Min)
-Ein User fordert sein 'Right to be forgotten' gemäß DSGVO. Events sind aber immutable. Wie löst man das? Ist Event Sourcing überhaupt DSGVO-konform?
+*Antwort-Impuls:* Nur für den Core-Banking-Teil (Transaktionen).
+- Grund: Auditen' gemäß DSGVO. Events sind aber immutable. Wie löst man das? Ist Event Sourcing überhaupt DSGVO-konform?
 
-3. Performance bei Millionen Events (2 Min)
-Ein Aggregate hat Millionen Events über Jahre angesammelt. Wie performant ist Event Replay dann noch? Wann wird das zum Problem?
+*Antwort-Impuls:* "Crypto-Shredding".
+- Wir speichern personenbezogene Daten s über Jahre angesammelt. Wie performant ist Event Replay dann noch? Wann wird das zum Problem?
 
-4. Event Schema Evolution (2 Min)
-Ihr habt ein OrderCreated-Event mit Version 1. Jetzt braucht ihr ein neues Feld. Wie ändert man Events, wenn alte Versionen bereits gespeichert sind?
+*Antwort-Impuls:* Snapshots.
+- Niemand spielt 1 Mio Events ab.
+- Wir machen at
+. Jetzt braucht ihr ein neues Feld. Wie ändert man Events, wenn alte Versionen bereits gespeichert sind?
 
-5. Event Sourcing vs. Change Data Capture (2 Min)
-Manche argumentieren: Warum nicht einfach Change Data Capture nutzen? DB-Logs geben uns auch die History. Wo liegt der Unterschied zu Event Sourcing?
--->
+*Antwort-Impuls:* Upcasting.
+- Alte Events bleiben wie sie sind (Immutable!). nicht einfach Change Data Capture nutzen? DB-Logs geben uns auch die History. Wo liegt der Unterschied zu Event Sourcing?
 
----
-layout: center
-class: text-center
----
-
-# Quellenverzeichnis
-
-<div mt-8 text-left max-w-200 mx-auto text-sm>
+*Antwort-Impuls:* Semantik (Intent vs. State Change).
+- CDC (DB-Log): " e-is 8 text-left max-w-200 mx-auto text-sm>
 
 <div mb-4>
   <div font-semibold mb-2>Hauptquellen</div>
