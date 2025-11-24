@@ -1356,7 +1356,9 @@ Fehlerfall:
 Wichtig: Kompensationen sind NEUE Events, nicht das Rückgängig-machen alter Events. Events bleiben immutable!
 
 **Zwei Ansätze (30 Sek):**
-Es gibt Choreographie (dezentral) und Orchestrierung (zentral).
+Wir unterscheiden zwei Arten der Koordination:
+1. **Choreographie (Dezentral):** Wie beim Tanz. Jeder Service kennt seine Schritte und reagiert autonom auf Events. Kein zentraler Chef.
+2. **Orchestrierung (Zentral):** Wie im Orchester. Ein zentraler "Conductor" (Saga Manager) sagt jedem Service, was er wann tun soll.
 
 Wichtig: Details dazu im Vortrag am 12.12. Hier ist nur relevant: Event Sourcing ist die perfekte Basis für Sagas, da wir die Historie für Kompensationen bereits haben.
 [Quelle: Stopford diskutiert beide Ansätze im Kontext von Event-Driven Systems]
