@@ -176,6 +176,9 @@ glowSeed: 100
     <div i-carbon:idea text-yellow-300 text-2xl />
     <span text-lg font-semibold>Wie können wir nicht nur SEHEN wo wir sind, sondern auch verstehen, WIE wir dorthin gekommen sind?</span>
   </div>
+  <div absolute bottom-4 right-4 text-xs opacity-50>
+    Quelle: Martin Fowler - "Event Sourcing"
+  </div>
 </div>
 
 <!--
@@ -276,6 +279,9 @@ glowSeed: 150
         <span>Vollständige Historie</span>
       </div>
     </div>
+  </div>
+  <div absolute bottom-4 right-4 text-xs opacity-50>
+    Quelle: Ben Stopford - "Designing Event-Driven Systems"
   </div>
 </div>
 
@@ -424,6 +430,9 @@ glowSeed: 200
     </div>
   </div>
 </div>
+<div absolute bottom-4 right-4 text-xs opacity-50>
+  Quelle: Microsoft Azure Architecture Patterns
+</div>
 
 <!--
 **1. Events (45 Sek):**
@@ -483,24 +492,12 @@ glowSeed: 175
     </div>
     <div px-3 py-2>
       <div text-xs mb-2>Kommunikationsmuster zwischen Services</div>
-      <div font-mono text-xs bg="black/30" rounded-lg p-2 mb-2>
-        <div>Service A → OrderPlaced</div>
-        <div>Service B ← subscribes</div>
-        <div>Service C ← subscribes</div>
+      <div text-xs opacity-70 mb-2>
+        Fokus auf den Austausch von Nachrichten zwischen entkoppelten Systemen.
       </div>
-      <div flex flex-col gap-1 text-xs>
-        <div flex items-center gap-2>
-          <div i-carbon:checkmark-outline text-green-400 />
-          <span>Lose Kopplung</span>
-        </div>
-        <div flex items-center gap-2>
-          <div i-carbon:checkmark-outline text-green-400 />
-          <span>Asynchrone Kommunikation</span>
-        </div>
-        <div flex items-center gap-2>
-          <div i-carbon:checkmark-outline text-green-400 />
-          <span>Service-zu-Service</span>
-        </div>
+      <div bg="blue-900/30" rounded p-2 text-xs flex items-center gap-2>
+        <div i-carbon:presentation-file text-blue-300 />
+        <span font-semibold>Siehe Vortrag am 05.12.</span>
       </div>
     </div>
   </div>
@@ -568,15 +565,18 @@ glowSeed: 175
     </div>
   </div>
 </div>
+<div absolute bottom-4 right-4 text-xs opacity-50>
+  Quelle: Stopford; Microsoft CQRS Pattern
+</div>
 
 <!--
 **Einordnung (30 Sek):**
 Bevor wir ins Code-Beispiel gehen, wichtige Abgrenzung: Event Sourcing ist NICHT das gleiche wie Event-Driven Architecture, wird aber oft verwechselt.
 
-**Event-Driven Architecture (45 Sek):**
-Event-Driven Architecture ist ein Kommunikationsmuster zwischen Services. Services kommunizieren über Events - z.B. 'OrderPlaced' wird published, andere Services reagieren darauf. Das System ist lose gekoppelt.
+**Event-Driven Architecture (30 Sek):**
+Event-Driven Architecture ist ein Kommunikationsmuster zwischen Services. Services kommunizieren über Events - z.B. 'OrderPlaced' wird published, andere Services reagieren darauf.
 
-Event Sourcing dagegen ist ein Persistenzmuster INNERHALB eines Service. Es geht darum, WIE wir Daten speichern, nicht wie Services kommunizieren.
+Wichtig: Dazu gibt es einen eigenen Vortrag am 05.12., daher hier nur kurz: EDA = Kommunikation, Event Sourcing = Persistenz.
 [Quelle: Stopford unterscheidet zwischen "Event Collaboration" (EDA) und "Event Sourcing" (Persistenz)]
 
 **CQRS Connection (45 Sek):**
@@ -588,6 +588,125 @@ Mit Event Sourcing:
 
 Diese Trennung bringt Performance-Vorteile durch separate Skalierung, führt aber zu Eventual Consistency.
 [Quelle: Microsoft CQRS Pattern; Wolff Video zu CQRS & Event Sourcing]
+-->
+
+---
+class: py-10
+glowSeed: 200
+---
+
+# CQRS: Command Query Responsibility Segregation
+
+<span>Trennung von Schreib- und Lese-Operationen</span>
+
+<div mt-8 grid grid-cols-2 gap-4>
+  <!-- Write Side -->
+  <div
+    v-click
+    border="2 solid indigo-800" bg="indigo-800/20"
+    rounded-lg overflow-hidden
+  >
+    <div bg="indigo-800/40" px-3 py-1.5 flex items-center>
+      <div i-carbon:edit text-indigo-300 text-lg mr-2 />
+      <span font-bold text-sm>Command Side (Write)</span>
+    </div>
+    <div px-3 py-2>
+```java
+public void handle(CreateOrder cmd) {
+  // 1. Validierung
+  // 2. Business Logic
+  // 3. Event erzeugen
+}
+```
+      <div flex flex-col gap-1 text-xs opacity-80 mt-2>
+        <div flex items-center gap-2>
+          <div i-carbon:checkmark-outline text-green-400 />
+          <span>Optimiert für Writes & Logik</span>
+        </div>
+        <div flex items-center gap-2>
+          <div i-carbon:checkmark-outline text-green-400 />
+          <span>Complex Domain Model</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Read Side -->
+  <div
+    v-click
+    border="2 solid teal-800" bg="teal-800/20"
+    rounded-lg overflow-hidden
+  >
+    <div bg="teal-800/40" px-3 py-1.5 flex items-center>
+      <div i-carbon:search text-teal-300 text-lg mr-2 />
+      <span font-bold text-sm>Query Side (Read)</span>
+    </div>
+    <div px-3 py-2>
+```java
+public OrderView getById(UUID id) {
+  // Direkter Zugriff auf
+  // denormalisierte Daten
+  return repository.findById(id);
+}
+```
+      <div flex flex-col gap-1 text-xs opacity-80 mt-2>
+        <div flex items-center gap-2>
+          <div i-carbon:checkmark-outline text-green-400 />
+          <span>Optimiert für Reads</span>
+        </div>
+        <div flex items-center gap-2>
+          <div i-carbon:checkmark-outline text-green-400 />
+          <span>Denormalisiert (DTOs)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  v-click
+  mt-8 border="1 solid gray-700" bg="gray-800/30"
+  rounded-lg p-4
+>
+  <div flex items-center justify-center gap-2 mb-4>
+    <div i-carbon:arrows-horizontal text-gray-400 text-xl />
+    <span font-bold text-sm>Synchronisation: Eventual Consistency</span>
+  </div>
+  
+  <div grid grid-cols-3 gap-4 text-center text-xs>
+    <div flex flex-col items-center gap-2>
+      <div i-carbon:flash text-yellow-400 text-2xl />
+      <div>
+        <div font-semibold>1. Event Published</div>
+        <div opacity-70 mt-1>Write Side emittiert Event nach Transaktion</div>
+      </div>
+    </div>
+    <div flex flex-col items-center gap-2>
+      <div i-carbon:settings text-blue-400 text-2xl />
+      <div>
+        <div font-semibold>2. Projection Update</div>
+        <div opacity-70 mt-1>Projector verarbeitet Event asynchron</div>
+      </div>
+    </div>
+    <div flex flex-col items-center gap-2>
+      <div i-carbon:data-view text-green-400 text-2xl />
+      <div>
+        <div font-semibold>3. Read Model Ready</div>
+        <div opacity-70 mt-1>Daten sind für Queries verfügbar</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--
+**CQRS Deep Dive (60 Sek):**
+Hier sehen wir das Prinzip im Detail.
+
+Links die Write Side: Hier passiert die Musik. Validierung, Business Rules, State Changes. Wir optimieren auf Konsistenz und Verhalten.
+
+Rechts die Read Side: Hier wollen wir nur schnell Daten lesen. Keine Joins, keine komplexen Berechnungen zur Laufzeit. Die Daten liegen so, wie der Client sie braucht (z.B. als flaches JSON Document).
+
+Der Clou: Wir können beide Seiten unabhängig skalieren. Viele Reads? Skaliere die Read-Side. Komplexe Logik? Skaliere die Write-Side.
 -->
 
 ---
@@ -1190,32 +1309,16 @@ glowSeed: 325
   </div>
 </div>
 
-<div v-click mt-3 grid grid-cols-2 gap-3>
-  <div border="2 solid purple-800" bg="purple-800/20" rounded-lg p-2>
-    <div font-bold text-xs mb-1>Choreographie</div>
-    <div text-xs opacity-70 mb-1>Services reagieren auf Events</div>
+<div v-click mt-4 text-center>
+  <div bg="purple-800/20" border="1 solid purple-800" rounded-lg p-2 inline-block>
     <div flex items-center gap-2 text-xs>
-      <div i-carbon:checkmark-outline text-green-400 />
-      <span>Dezentral, lose gekoppelt</span>
-    </div>
-    <div flex items-center gap-2 text-xs>
-      <div i-carbon:close text-red-400 />
-      <span>Schwer zu überwachen</span>
+      <div i-carbon:presentation-file text-purple-300 />
+      <span>Details zu Sagas & Verteilten Systemen: Vortrag am 12.12.</span>
     </div>
   </div>
-
-  <div border="2 solid indigo-800" bg="indigo-800/20" rounded-lg p-2>
-    <div font-bold text-xs mb-1>Orchestrierung</div>
-    <div text-xs opacity-70 mb-1>Saga-Koordinator steuert zentral</div>
-    <div flex items-center gap-2 text-xs>
-      <div i-carbon:checkmark-outline text-green-400 />
-      <span>Leichter zu verstehen</span>
-    </div>
-    <div flex items-center gap-2 text-xs>
-      <div i-carbon:close text-red-400 />
-      <span>Single Point of Failure</span>
-    </div>
-  </div>
+</div>
+<div absolute bottom-4 right-4 text-xs opacity-50>
+  Quelle: Ben Stopford; Chris Richardson
 </div>
 
 <!--
@@ -1237,11 +1340,10 @@ Fehlerfall:
 
 Wichtig: Kompensationen sind NEUE Events, nicht das Rückgängig-machen alter Events. Events bleiben immutable!
 
-**Zwei Ansätze (60 Sek):**
+**Zwei Ansätze (30 Sek):**
+Es gibt Choreographie (dezentral) und Orchestrierung (zentral).
 
-Choreographie: Services reagieren auf Events und publishen neue Events. Dezentral, lose gekoppelt - aber schwer zu überwachen und zu debuggen. Wer ist verantwortlich für den Gesamtablauf?
-
-Orchestrierung: Ein Saga-Koordinator steuert den Ablauf zentral. Leichter zu verstehen und zu monitoren - aber Single Point of Failure und zentrale Abhängigkeit.
+Wichtig: Details dazu im Vortrag am 12.12. Hier ist nur relevant: Event Sourcing ist die perfekte Basis für Sagas, da wir die Historie für Kompensationen bereits haben.
 [Quelle: Stopford diskutiert beide Ansätze im Kontext von Event-Driven Systems]
 
 **Verbindung zu Event Sourcing (30 Sek):**
@@ -1379,6 +1481,9 @@ glowSeed: 350
     Nutzt Event Sourcing dort, wo Audit-Trail kritisch ist - nicht überall!
   </div>
 </div>
+<div absolute bottom-4 right-4 text-xs opacity-50>
+  Quelle: EventStore DB Docs; Axon Framework
+</div>
 
 <!--
 **Frameworks (45 Sek):**
@@ -1506,6 +1611,9 @@ glowSeed: 375
       <span font-semibold>Fowler's Warnung:</span> "Es ist schwer, das später zu retrofiten. Aber für die meisten Systeme ist die Komplexität nicht gerechtfertigt."
     </span>
   </div>
+</div>
+<div absolute bottom-4 right-4 text-xs opacity-50>
+  Quelle: Martin Fowler; Microsoft Azure Docs
 </div>
 
 <!--
