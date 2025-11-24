@@ -1719,7 +1719,12 @@ Stellt euch vor, ihr entwickelt ein Banking-System. Würdet ihr für das gesamte
 - Alte Events bleiben wie sie sind (Immutable!). nicht einfach Change Data Capture nutzen? DB-Logs geben uns auch die History. Wo liegt der Unterschied zu Event Sourcing?
 
 *Antwort-Impuls:* Semantik (Intent vs. State Change).
-- CDC (DB-Log): " e-is 8 text-left max-w-200 mx-auto text-sm>
+- CDC (DB-Log): "Change Data Capture"
+-->
+
+---
+
+<div text-left max-w-200 mx-auto text-sm>
 
 <div mb-4>
   <div font-semibold mb-2>Hauptquellen</div>
