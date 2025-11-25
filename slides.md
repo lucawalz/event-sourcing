@@ -936,13 +936,23 @@ public class OrderService {
 <!--
 **Event Definition (Links):**
 Schauen wir auf den Code links. Wir sehen die Klasse `OrderCreatedEvent`.
-Wichtig sind hier die `final` Felder. Events sind unveränderliche Fakten. Es gibt keine Setter. Einmal passiert, bleibt es so.
-Wir speichern hier nur die Daten, die für das Event relevant sind: `customerId` und `items`.
+- **Immutability ist Key:** Wichtig sind die `final` Felder. Events sind unveränderliche Fakten aus der Vergangenheit. Es gibt keine Setter. Einmal passiert, bleibt es so.
+- **Past Tense:** Der Name `OrderCreatedEvent` ist bewusst in der Vergangenheit gewählt.
+- **Relevante Daten:** Wir speichern nur, was für das fachliche Ereignis relevant ist (`customerId`, `items`). Die `DomainEvent` Basisklasse kümmert sich um technische Metadaten wie ID und Timestamp.
 
 **Event Store mit Concurrency Control (90 Sek):**
-Der Event Store ist Append Only - aber mit einer wichtigen Ergänzung für Concurrency Control:
+Rechts sehen wir das Interface des Event Stores. Er ist "Append Only" - wir fügen nur hinten an.
+Aber der kritische Teil ist `expectedVersion`:
 
-Kritisch: expectedVersion verhindert konkurrierende Schreibvorgänge - ähnlich wie Optimistic Locking in traditionellen Systemen. Wenn zwei Prozesse gleichzeitig schreiben, schlägt einer fehl. [Quelle: Stopford, Chapter 11: "Identity and Concurrency Control"]
+1. **Optimistic Locking:** Das ist unser Schutz gegen Lost Updates.
+2. **Der Flow:**
+   - Wir laden den Stream (Version 10).
+   - Wir berechnen das neue Event.
+   - Wir versuchen zu speichern mit `expectedVersion=10`.
+   - Wenn in der Zwischenzeit jemand anderes ein Event angehängt hat (Version ist jetzt 11), schlägt unser Speicherversuch fehl.
+3. **Warum wichtig?** Ohne das hätten wir Race Conditions und inkonsistenten State. Das garantiert uns Konsistenz auf Aggregate-Ebene.
+
+[Quelle: Stopford, Chapter 11: "Identity and Concurrency Control"]
 -->
 
 ---
@@ -1036,20 +1046,17 @@ public Order getById(UUID orderId) {
 
 <!--
 **State Reconstruction (Links):**
-Links sehen wir, wie wir aus Events wieder ein Objekt machen.
-Die Methode `fromEvents` ist der Einstieg. Sie erstellt eine leere `Order` und iteriert über die Events.
-Das Herzstück ist die `apply` Methode darunter.
-Hier ist ein Switch (oder if/else) über den Event-Typ.
-- Bei `OrderCreated` setzen wir die ID.
-- Bei `ItemAdded` fügen wir was zur Liste hinzu.
-Wichtig: Hier passiert keine Validierung mehr! Das Event IST ja schon passiert. Wir updaten nur den State.
-[Quelle: Fowler: Event processing logic in domain model]
+Links sehen wir das "Left Fold" Pattern der funktionalen Programmierung: `State + Event = New State`.
+- **fromEvents:** Wir starten mit einem leeren State (oder Default-Konstruktor).
+- **apply:** Das ist der interne Handler.
+- **WICHTIG:** In `apply` gibt es KEINE Business-Logik oder Validierung! Das Event ist bereits passiert. Wir dürfen es nicht ablehnen. Wir projizieren es nur in den State.
 
 **Snapshots (Rechts):**
-Rechts die Performance-Optimierung.
-In `getById` laden wir erst den `OrderSnapshot` (Zeile 1010).
-Dann laden wir nur die Events *nach* der Version des Snapshots (`getEvents(..., snapshot.version)`).
-Wir sparen uns also das Abspielen von tausenden alten Events und müssen nur die wenigen neuen anwenden.
+Rechts die Performance-Optimierung für Aggregate mit vielen Events (z.B. > 1000).
+- **Das Prinzip:** Wir laden nicht ALLES seit Anbeginn der Zeit.
+- **Der Shortcut:** Wir laden den letzten Snapshot (z.B. Version 100) und spielen nur die Events ab, die DANACH kamen (101, 102...).
+- **Trade-off:** Schnelleres Laden vs. Speicherplatz & Komplexität beim Speichern des Snapshots.
+
 [Quelle: Fowler: "Application State Storage"]
 -->
 
@@ -1338,36 +1345,37 @@ glowSeed: 325
 
 <!--
 **Problem (30 Sek):**
-In Microservices haben wir ein fundamentales Problem: Wie koordinieren wir Transaktionen über mehrere Services hinweg? Verteilte ACID-Transaktionen funktionieren nicht - zu langsam, zu fehleranfällig.
+Wir kommen zu einem der schwierigsten Probleme in verteilten Systemen: Transaktionen. In einem Monolithen ist das einfach – `BEGIN TRANSACTION`, `COMMIT`, fertig. ACID regelt das.
+Aber in Microservices? Wir können keine verteilten ACID-Transaktionen über mehrere Services spannen. Das ist zu langsam (Latenz) und zu fehleranfällig (Single Point of Failure). Wir brauchen also einen anderen Weg.
 
-**Was ist eine Saga? (60 Sek):**
-Eine Saga ist eine Sequenz von lokalen Transaktionen, koordiniert über Events. Wenn eine Transaktion fehlschlägt, werden kompensierende Transaktionen ausgeführt.
+**Die Lösung: Saga Pattern (60 Sek):**
+Hier kommt das Saga Pattern ins Spiel. Statt einer großen Transaktion haben wir eine Sequenz von *lokalen* Transaktionen. Jeder Schritt wird durch ein Event ausgelöst.
 
-Beispiel: Order-Service → Payment-Service → Shipping-Service
+Nehmen wir unser E-Commerce Beispiel:
+1. Der Order-Service erstellt die Bestellung → `OrderCreated`.
+2. Der Payment-Service hört das, bucht ab → `PaymentProcessed`.
+3. Der Shipping-Service hört das, versendet → `ItemsShipped`.
+Im Erfolgsfall ist das eine saubere Kette.
 
-Erfolgsfall:
-- OrderCreated → PaymentProcessed → ItemsShipped
+Aber was, wenn der Versand fehlschlägt? Wir können die Zeit nicht zurückdrehen.
+Stattdessen führen wir **kompensierende Transaktionen** aus.
+- Shipping schlägt fehl → `ShippingFailed`.
+- Payment-Service hört das → führt Refund durch → `PaymentRefunded`.
+- Order-Service hört das → storniert Bestellung → `OrderCancelled`.
 
-Fehlerfall:
-- OrderCreated → PaymentProcessed → ShippingFailed
-- → PaymentRefunded ← Kompensation!
-- → OrderCancelled ← Kompensation!
+WICHTIG: Kompensation bedeutet nicht "Löschen" oder "Undo" im klassischen Sinn. Wir erzeugen *neue* Events, die den Effekt der vorherigen logisch ausgleichen. Die Historie bleibt bestehen – wir sehen, dass bestellt, bezahlt und dann erstattet wurde.
 
-Wichtig: Kompensationen sind NEUE Events, nicht das Rückgängig-machen alter Events. Events bleiben immutable!
+**Koordination (15 Sek):**
+Es gibt zwei Arten, Sagas zu koordinieren:
+1. **Choreographie:** Dezentral, Services reagieren auf Events (wie beim Tanz).
+2. **Orchestrierung:** Ein zentraler Manager steuert den Ablauf.
+Details dazu im Deep-Dive am 12.12.
 
-**Zwei Ansätze (30 Sek):**
-Wir unterscheiden zwei Arten der Koordination:
-1. **Choreographie (Dezentral):** Wie beim Tanz. Jeder Service kennt seine Schritte und reagiert autonom auf Events. Kein zentraler Chef.
-2. **Orchestrierung (Zentral):** Wie im Orchester. Ein zentraler "Conductor" (Saga Manager) sagt jedem Service, was er wann tun soll.
-
-Wichtig: Details dazu im Vortrag am 12.12. Hier ist nur relevant: Event Sourcing ist die perfekte Basis für Sagas, da wir die Historie für Kompensationen bereits haben.
-[Quelle: Stopford diskutiert beide Ansätze im Kontext von Event-Driven Systems]
-
-**Verbindung zu Event Sourcing (30 Sek):**
-Event Sourcing ist perfekt für Sagas, weil:
-- Events die natürliche Kommunikation sind
-- Der Event Store die Historie jeder Saga speichert
-- Wir bei Fehlern die komplette Saga-Historie haben für Debugging
+**Warum Event Sourcing? (30 Sek):**
+Das ist der entscheidende Punkt: **Event Sourcing ist die perfekte Basis für Sagas.**
+1. **Kommunikation:** Events sind bereits die Sprache unseres Systems.
+2. **Historie:** Für Kompensationen müssen wir wissen, was genau passiert ist. Der Event Store liefert uns diesen Audit-Trail "gratis".
+3. **Debugging:** Wenn eine Saga klemmt, haben wir die komplette Historie im Store und können genau sehen, wo es gehakt hat.
 -->
 
 ---
