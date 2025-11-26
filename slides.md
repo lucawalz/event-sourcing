@@ -934,23 +934,27 @@ public class OrderService {
 </div>
 
 <!--
-**Event Definition (Links):**
-Schauen wir auf den Code links. Wir sehen die Klasse `OrderCreatedEvent`.
-- **Immutability ist Key:** Wichtig sind die `final` Felder. Events sind unveränderliche Fakten aus der Vergangenheit. Es gibt keine Setter. Einmal passiert, bleibt es so.
-- **Past Tense:** Der Name `OrderCreatedEvent` ist bewusst in der Vergangenheit gewählt.
-- **Relevante Daten:** Wir speichern nur, was für das fachliche Ereignis relevant ist (`customerId`, `items`). Die `DomainEvent` Basisklasse kümmert sich um technische Metadaten wie ID und Timestamp.
+**Event Definition (Links, 45 Sek):**
+Links sehen wir die Anatomie eines Events am Beispiel `OrderCreatedEvent`.
+
+**Immutability ist nicht verhandelbar:** Alle Felder sind `final`. Warum? Events beschreiben die Vergangenheit - und die können wir nicht ändern. Keine Setter, keine Mutationen. "Martin hat um 10:15 eine Bestellung aufgegeben" bleibt für immer wahr.
+
+**Past Tense:** `OrderCreatedEvent`, nicht `CreateOrderEvent`. Events sind Fakten ("ist passiert"), keine Befehle ("soll passieren").
+
+**Fachliche Essenz:** Wir speichern nur, was geschäftlich relevant ist - `customerId` und `items`. Technische Metadaten (Event-ID, Timestamp, Aggregate-ID) kommen von der Basisklasse.
 
 **Event Store mit Concurrency Control (90 Sek):**
-Rechts sehen wir das Interface des Event Stores. Er ist "Append Only" - wir fügen nur hinten an.
-Aber der kritische Teil ist `expectedVersion`:
+Rechts das kritische Stück: Der Event Store ist "Append Only" - wir hängen nur an, niemals ändern.
 
-1. **Optimistic Locking:** Das ist unser Schutz gegen Lost Updates.
-2. **Der Flow:**
-   - Wir laden den Stream (Version 10).
-   - Wir berechnen das neue Event.
-   - Wir versuchen zu speichern mit `expectedVersion=10`.
-   - Wenn in der Zwischenzeit jemand anderes ein Event angehängt hat (Version ist jetzt 11), schlägt unser Speicherversuch fehl.
-3. **Warum wichtig?** Ohne das hätten wir Race Conditions und inkonsistenten State. Das garantiert uns Konsistenz auf Aggregate-Ebene.
+Aber seht ihr `expectedVersion`? Das ist unser Schutz gegen Race Conditions.
+
+**Das Szenario:** Zwei Benutzer laden Order 123 gleichzeitig (beide sehen Version 10). Beide wollen ein Item hinzufügen.
+- User A speichert zuerst: `append(orderId, event, expectedVersion=10)` → ✅ Erfolg, Version wird 11
+- User B versucht zu speichern: `append(orderId, event, expectedVersion=10)` → ❌ Fehler! Version ist jetzt 11, nicht 10
+
+**Was passiert dann?** User B muss neu laden (mit Event 11), sein Event neu berechnen und erneut versuchen - klassisches Optimistic Locking.
+
+**Warum essentiell?** Ohne `expectedVersion` hätten wir Lost Updates und inkonsistenten State. Das ist unsere Konsistenz-Garantie auf Aggregate-Ebene.
 
 [Quelle: Stopford, Chapter 11: "Identity and Concurrency Control"]
 -->
@@ -1045,17 +1049,38 @@ public Order getById(UUID orderId) {
 </div>
 
 <!--
-**State Reconstruction (Links):**
-Links sehen wir das "Left Fold" Pattern der funktionalen Programmierung: `State + Event = New State`.
-- **fromEvents:** Wir starten mit einem leeren State (oder Default-Konstruktor).
-- **apply:** Das ist der interne Handler.
-- **WICHTIG:** In `apply` gibt es KEINE Business-Logik oder Validierung! Das Event ist bereits passiert. Wir dürfen es nicht ablehnen. Wir projizieren es nur in den State.
+**State Reconstruction (Links, 90 Sek):**
+Links sehen wir das Herzstück von Event Sourcing: State Reconstruction durch Event Replay.
 
-**Snapshots (Rechts):**
-Rechts die Performance-Optimierung für Aggregate mit vielen Events (z.B. > 1000).
-- **Das Prinzip:** Wir laden nicht ALLES seit Anbeginn der Zeit.
-- **Der Shortcut:** Wir laden den letzten Snapshot (z.B. Version 100) und spielen nur die Events ab, die DANACH kamen (101, 102...).
-- **Trade-off:** Schnelleres Laden vs. Speicherplatz & Komplexität beim Speichern des Snapshots.
+**Das Prinzip:** Wir "falten" Events nacheinander in einen Zustand - wie beim Aufbau eines LEGO-Modells, Stein für Stein.
+- **fromEvents:** Wir beginnen mit einem leeren Order-Objekt und spielen alle Events chronologisch ab.
+- **apply:** Für jedes Event aktualisieren wir den internen Zustand. OrderCreated setzt die Basis, ItemAdded fügt Positionen hinzu, OrderShipped ändert den Status.
+
+**Der kritische Punkt:** In `apply` gibt es KEINE Validierung oder Business-Logik! 
+Warum? Das Event ist bereits passiert - es ist eine Tatsache aus der Vergangenheit. Wir können es nicht ablehnen.
+Validierung passiert VOR dem Speichern des Events (im Command Handler), nicht beim Replay.
+`apply` ist rein deterministisch: Gleiche Events → Gleicher State. Immer.
+
+**Merke:** Events schreiben Geschichte, `apply` liest sie nur.
+
+**Snapshots - Der Performance-Trick (Rechts, 60 Sek):**
+Problem: Ein Aggregate mit 10.000 Events? Event Replay würde Sekunden dauern.
+
+Lösung: Snapshots sind "Checkpoints" des kompletten States.
+1. Lade Snapshot bei Event 1000
+2. Spiele nur Events 1001-1050 ab
+3. Fertig - 20x schneller!
+
+**Strategie:** Alle 100-500 Events einen Snapshot. Im Code sehen wir:
+- `snapshotStore.getLatest()` holt den neuesten Checkpoint
+- `eventStore.getEvents(id, version)` holt nur das Delta
+- Wir bauen State aus Snapshot + Delta
+
+**Trade-off:** 
+✅ Millisekunden statt Sekunden
+❌ Extra Speicher & Serialisierungs-Komplexität
+
+**Merke:** Snapshots sind optional. Events bleiben die Wahrheit - Snapshots kann man jederzeit neu bauen.
 
 [Quelle: Fowler: "Application State Storage"]
 -->
