@@ -2272,30 +2272,50 @@ class: text-center
 </div>
 
 <!--
-**Eröffnung (30 Sek):**
-Vielen Dank für eure Aufmerksamkeit! Jetzt ist eure Zeit. Ich habe einige Diskussionsfragen vorbereitet, aber beginnen wir mit euren Fragen. Wer möchte anfangen?
+**Diskussionsthesen mit Moderations-Impulsen:**
 
-**Vorbereitete Diskussionsfragen:**
+1. **Die Snapshot-Falle**
+"Event Sourcing mit Snapshots ist eigentlich gescheitertes Event Sourcing - wenn Performance nur mit Snapshots geht, hat man das falsche Pattern gewählt."
 
-1. Banking-System Use Case (2-3 Min)
-Stellt euch vor, ihr entwickelt ein Banking-System. Würdet ihr für das gesamte System oder nur für bestimmte Teile Event Sourcing einsetzen? Warum oder warum nicht?
+*Falls Stille:*
+- "Lasst mich provozieren: Snapshots sind doch nur Caching. Wenn ich cachen muss, ist mein Design kaputt, oder?"
+- "Gegenthese: Kein System kommt ohne Snapshots aus. Auch Git macht Snapshots - wir klonen nicht immer die gesamte History."
+- "Konkret: 10.000 Events = kein Problem. 10 Millionen Events = ? Wo zieht ihr die Grenze?"
+- "Alternative Perspektive: Vielleicht sind Snapshots nicht Scheitern, sondern einfach pragmatische Architektur?"
 
-*Antwort-Impuls:* Nur für den Core-Banking-Teil (Transaktionen).
-- Grund: Auditen' gemäß DSGVO. Events sind aber immutable. Wie löst man das? Ist Event Sourcing überhaupt DSGVO-konform?
 
-*Antwort-Impuls:* "Crypto-Shredding".
-- Wir speichern personenbezogene Daten s über Jahre angesammelt. Wie performant ist Event Replay dann noch? Wann wird das zum Problem?
+2. **DSGVO vs. Immutability**
+Ein Nutzer verlangt Löschung nach DSGVO. Team A sagt Crypto-Shredding, Team B sagt das ist Augenwischerei.
 
-*Antwort-Impuls:* Snapshots.
-- Niemand spielt 1 Mio Events ab.
-- Wir machen at
-. Jetzt braucht ihr ein neues Feld. Wie ändert man Events, wenn alte Versionen bereits gespeichert sind?
+*Falls Stille:*
+- "Mal ehrlich: Wenn der Schlüssel weg ist, aber die verschlüsselten Events noch da sind - ist das gelöscht oder nur versteckt?"
+- "Juristen-Perspektive: DSGVO verlangt Löschung. Steht da 'unleserlich machen' oder wirklich 'löschen'?"
+- "Technische Frage: Wenn ich neu projizieren will, aber 30% der Events sind verschlüsselt ohne Key - funktioniert mein System noch?"
+- "Radikale Idee: Events ohne PIIs designen. 'UserCreated' enthält nur UUID, Name kommt in separate Projektion. Ist das überhaupt praktikabel?"
+- "Edge Case: Was wenn in Event-Metadaten (Timestamps, Korrelations-IDs) auch PIIs stecken? Habt ihr das bedacht?"
 
-*Antwort-Impuls:* Upcasting.
-- Alte Events bleiben wie sie sind (Immutable!). nicht einfach Change Data Capture nutzen? DB-Logs geben uns auch die History. Wo liegt der Unterschied zu Event Sourcing?
 
-*Antwort-Impuls:* Semantik (Intent vs. State Change).
-- CDC (DB-Log): "Change Data Capture"
+3. **CDC vs. Event Sourcing - Der Pragmatiker-Einwand**
+"CDC ist Event Sourcing für Arme - und für 80% ausreichend. Warum die Komplexität?"
+
+*Falls Stille:*
+- "Devil's Advocate: Postgres hat WAL-Logs. Debezium liest die aus. Fertig ist die Event-Historie. Was kann Event Sourcing, das CDC nicht kann?"
+- "Intent vs. State: CDC sagt 'Balance = 100'. Event Sourcing sagt 'DepositMade(100)' oder 'FeesCharged(100)'. Macht das wirklich einen Unterschied?"
+- "Use Case Challenge: Nennt mir ein Beispiel, wo CDC definitiv scheitert und Event Sourcing zwingend ist."
+- "Gegenargument: CDC ist abhängig von DB-Implementierung. Event Sourcing ist Business-getrieben. Ist das relevant oder akademisch?"
+- "Kompromiss: Event Sourcing für Bounded Contexts, CDC für Integrationen. Best of both worlds?"
+
+
+4. **Die Upcasting-Hölle**
+Nach 3 Jahren: 15 Event-Versionen, komplexe Upcasting-Chains, Debugging-Albtraum.
+
+*Falls Stille:*
+- "Horror-Szenario: 'CustomerAddressChanged_v1' → v2 → v3 ... → v15. Wer debugged das noch?"
+- "Strategie 1: Weak Schema. Events als JSON, alte Felder optional. Klingt nach Tech Debt, oder ist das pragmatisch?"
+- "Strategie 2: Events nie ändern, nur neue Events hinzufügen. 'CustomerAddressChanged' und 'CustomerAddressChangedV2' parallel. Ist das besser oder schlimmer?"
+- "Code-Frage: Wer wartet den Upcasting-Code? Das Team, das die Events ursprünglich geschrieben hat, ist längst weg."
+- "Snapshotting as Escape Hatch: Nach 2 Jahren einen Snapshot machen und alte Events 'vergessen'. Ist das Betrug oder clever?"
+- "Realität-Check: Wie viele hier haben Event Sourcing > 2 Jahre produktiv? Wie habt ihr Event-Evolution gehandhabt?"
 -->
 
 ---
