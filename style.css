@@ -364,3 +364,17 @@ iframe {
 .slidev-layout pre code .line {
   line-height: 0.82rem !important;
 }
+
+@media print {
+  .slidev-vclick-hidden {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    filter: none !important;
+    display: block !important;
+    visibility: visible !important;
+  }
+  .slidev-vclick-target {
+    transition: none !important;
+    opacity: 1 !important;
+  }
+}
