@@ -65,19 +65,21 @@ download: true
 **Eröffnung (15 Sek):**
 Guten Tag! Heute möchte ich euch Event Sourcing vorstellen - ein Architekturmuster, das fundamental anders an Datenspeicherung herangeht als traditionelle Systeme.
 
-**What (30 Sek):**
-Event Sourcing speichert nicht den aktuellen Zustand unserer Daten, sondern die komplette Historie aller Zustandsänderungen als Sequenz von Events. Statt zu sagen 'Martins Konto hat 110€', speichern wir 'Martin hat 100€ eingezahlt, dann 10€ hinzugefügt'.
-
 **Why (45 Sek):**
 Warum ist das relevant? Stellen wir uns vor: Ein Kunde ruft bei einer Bank an und sagt, sein Kontostand sei falsch. Mit traditionellen CRUD-Systemen sehen wir nur den aktuellen Wert - aber nicht, wie wir dorthin gekommen sind. Die Historie ist verloren. Bei regulatorischen Anforderungen, Audits oder Fehleranalysen ist das ein massives Problem.
 
+**What (30 Sek):**
+Event Sourcing speichert nicht den aktuellen Zustand unserer Daten, sondern die komplette Historie aller Zustandsänderungen als Sequenz von Events. Statt zu sagen 'Martins Konto hat 110€', speichern wir 'Martin hat 100€ eingezahlt, dann 10€ hinzugefügt'.
+
 **How - Roadmap (30 Sek):**
 In den nächsten 20 Minuten werden wir sehen:
-1. Was genau das Problem mit traditioneller Speicherung ist
-2. Wie Event Sourcing funktioniert
-3. Ein praktisches Code-Beispiel
-4. Wann dieses Pattern Sinn macht - und wann nicht
-5. Anschließend haben wir 10 Minuten für eine moderierte Diskussion.
+1. Das Problem mit traditioneller Datenspeicherung
+2. Event Sourcing Grundkonzepte & CQRS
+3. Praktische Code-Beispiele (Events, Store, State Reconstruction)
+4. Vor- & Nachteile
+5. Anwendungsmuster (Sagas, Migration, Frameworks)
+6. Detail-Probleme (GDPR, Versioning, Testing)
+7. Fazit: Wann einsetzen?
 -->
 
 ---

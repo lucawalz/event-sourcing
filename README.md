@@ -1,6 +1,6 @@
-# Event Sourcing Presentation
+# Event Sourcing - From State to Events
 
-30-minute presentation covering Event Sourcing fundamentals, implementation patterns, and practical applications.
+A 20-minute presentation on Event Sourcing with practical code examples and application patterns.
 
 ## Quick Start
 
@@ -9,11 +9,27 @@ npm install
 npm run dev
 ```
 
-## Structure
+The presentation will open at `http://localhost:3030`
 
-30-minute format:
-- 20 minutes: Main presentation (12 slides)
-- 10 minutes: Discussion
+## Presentation Structure
+
+20-minute presentation covering:
+1. **Problem**: Traditional data storage limitations
+2. **Concepts**: Event Sourcing fundamentals & CQRS
+3. **Implementation**: Code examples (Events, Store, State Reconstruction)
+4. **Trade-offs**: Advantages & disadvantages
+5. **Patterns**: Sagas, Migration strategies, Frameworks
+6. **Detail Problems**: GDPR compliance, Event versioning, Testing
+7. **Conclusion**: When to use Event Sourcing
+
+## Demo
+
+The repository includes an interactive Event Sourcing demo built with Vite that visualizes:
+- Event streams and event store operations
+- State reconstruction from events
+- Time-travel queries
+
+To run the demo separately, navigate to the project directory and run `npm run dev`.
 
 ## Export
 
