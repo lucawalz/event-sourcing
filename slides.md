@@ -1703,22 +1703,22 @@ Nutzt Event Sourcing dort, wo Audit-Trail kritisch ist - nicht überall.
 
 <span>"Right to be Forgotten" mit unveränderlichen Events</span>
 
-<div mt-2 />
+<div mt-1 />
 
 <div
   v-click
   border="2 solid red-800" bg="red-800/20"
-  rounded-lg overflow-hidden mb-2
+  rounded-lg overflow-hidden mb-1.5
 >
-  <div bg="red-800/40" px-2 py-1 flex items-center>
+  <div bg="red-800/40" px-2 py-0.5 flex items-center>
     <div i-carbon:warning-alt text-red-300 text-lg mr-2 />
     <span font-bold text-sm>Das Problem</span>
   </div>
-  <div px-2 py-1.5>
-    <div text-xs mb-1>
+  <div px-2 py-1>
+    <div text-xs mb-0.5>
       GDPR Artikel 17: "Right to be Forgotten" - Nutzer können Löschung ihrer Daten verlangen
     </div>
-    <div bg="red-900/30" rounded-lg p-1.5 text-xs>
+    <div bg="red-900/30" rounded-lg p-1 text-xs>
       <div flex items-center gap-2>
         <div i-carbon:locked text-red-400 />
         <span>Events sind unveränderlich - echtes Löschen widerspricht dem Pattern!</span>
@@ -1732,15 +1732,15 @@ Nutzt Event Sourcing dort, wo Audit-Trail kritisch ist - nicht überall.
   border="2 solid green-800" bg="green-800/20"
   rounded-lg overflow-hidden
 >
-  <div bg="green-800/40" px-2 py-1 flex items-center>
+  <div bg="green-800/40" px-2 py-0.5 flex items-center>
     <div i-carbon:security text-green-300 text-lg mr-2 />
     <span font-bold text-sm>Lösung: Crypto-Shredding</span>
   </div>
-  <div px-2 py-1.5>
+  <div px-2 py-1>
     <div grid grid-cols-2 gap-2>
       <div>
         <div text-xs font-semibold mb-0.5>Konzept</div>
-        <div font-mono text-xs bg="black/30" rounded-lg p-1.5>
+        <div font-mono text-xs bg="black/30" rounded-lg p-1>
           <div text-blue-300>// Verschlüssele PII</div>
           <div>Event: {</div>
           <div>  userId: "user-123",</div>
@@ -1753,17 +1753,17 @@ Nutzt Event Sourcing dort, wo Audit-Trail kritisch ist - nicht überall.
       </div>
       <div>
         <div text-xs font-semibold mb-0.5>Löschen</div>
-        <div font-mono text-xs bg="black/30" rounded-lg p-1.5>
+        <div font-mono text-xs bg="black/30" rounded-lg p-1>
           <div text-red-300>// Schlüssel löschen</div>
           <div>delete(userKey);</div>
-          <div mt-1 text-green-400>// Event bleibt,</div>
+          <div mt-0.5 text-green-400>// Event bleibt,</div>
           <div text-green-400>// aber unleserlich!</div>
-          <div mt-1>encrypted: "j4k2..."</div>
+          <div mt-0.5>encrypted: "j4k2..."</div>
           <div text-zinc-500>// ✓ Irreversibel</div>
         </div>
       </div>
     </div>
-    <div mt-1.5 flex flex-col gap-0.5 text-xs>
+    <div mt-1 flex flex-col gap-0.5 text-xs>
       <div flex items-center gap-2>
         <div i-carbon:checkmark-outline text-green-400 />
         <span>1. Personenbezogene Daten (PII) mit User-spezifischem Schlüssel verschlüsseln</span>
@@ -1780,7 +1780,7 @@ Nutzt Event Sourcing dort, wo Audit-Trail kritisch ist - nicht überall.
   </div>
 </div>
 
-<div v-click mt-2 bg="blue-800/20" border="2 solid blue-800" rounded-lg p-1.5>
+<div v-click mt-1.5 bg="blue-800/20" border="2 solid blue-800" rounded-lg p-1>
   <div flex items-center gap-2>
     <div i-carbon:idea text-blue-300 text-lg />
     <div text-xs>
@@ -1826,7 +1826,7 @@ So bleibt der Audit-Trail für Compliance lesbar, aber datenschutzkonform.
 
 <span>Wie ändern wir Events, wenn alte Versionen bereits gespeichert sind?</span>
 
-<div mt-2 />
+<div mt-1 />
 
 <div grid grid-cols-2 gap-2 items-start>
   <div
@@ -1835,12 +1835,12 @@ So bleibt der Audit-Trail für Compliance lesbar, aber datenschutzkonform.
     border="2 solid yellow-800" bg="yellow-800/20"
     rounded-lg overflow-hidden
   >
-    <div bg="yellow-800/40" px-2 py-1 flex items-center>
+    <div bg="yellow-800/40" px-2 py-0.5 flex items-center>
       <div i-carbon:warning-alt text-yellow-300 text-lg mr-2 />
       <span font-bold text-sm>Das Problem</span>
     </div>
     <div px-2 py-1>
-      <div font-mono text-xs bg="black/30" rounded-lg p-1.5>
+      <div font-mono text-xs bg="black/30" rounded-lg p-1>
         <div text-green-300>// Version 1 (2023)</div>
         <div>OrderCreated { customerId: string }</div>
         <div text-blue-300>// Version 2 (2024)</div>
@@ -1849,7 +1849,7 @@ So bleibt der Audit-Trail für Compliance lesbar, aber datenschutzkonform.
         <div text-yellow-300>  customerEmail: string  // Neu!</div>
         <div>}</div>
       </div>
-      <div text-xs mt-1 opacity-70>
+      <div text-xs mt-0.5 opacity-70>
         Alte Events fehlt das neue Feld
       </div>
     </div>
@@ -1862,12 +1862,12 @@ So bleibt der Audit-Trail für Compliance lesbar, aber datenschutzkonform.
     rounded-lg overflow-hidden
     flex="~ col"
   >
-    <div bg="green-800/40" px-2 py-1 flex items-center>
+    <div bg="green-800/40" px-2 py-0.5 flex items-center>
       <div i-carbon:renew text-green-300 text-lg mr-2 />
       <span font-bold text-sm>Strategien</span>
     </div>
     <div px-2 py-1 flex="~ col 1" justify-center>
-      <div flex flex-col gap-1.5>
+      <div flex flex-col gap-1>
         <div>
           <div flex items-center gap-2>
             <div i-carbon:upgrade text-blue-300 />
@@ -1894,10 +1894,10 @@ So bleibt der Audit-Trail für Compliance lesbar, aber datenschutzkonform.
   </div>
 </div>
 
-<div v-click mt-2 border="2 solid blue-800" bg="blue-800/20" rounded-lg overflow-hidden>
-  <div bg="blue-800/40" px-2 py-1 font-bold text-sm>Upcasting Beispiel</div>
+<div v-click mt-1.5 border="2 solid blue-800" bg="blue-800/20" rounded-lg overflow-hidden>
+  <div bg="blue-800/40" px-2 py-0.5 font-bold text-sm>Upcasting Beispiel</div>
   <div px-2 py-1>
-    <div font-mono text-xs bg="black/30" rounded-lg p-1.5>
+    <div font-mono text-xs bg="black/30" rounded-lg p-1>
       <div text-green-300>// Event Upcaster</div>
       <div>public class OrderCreatedUpcaster {</div>
       <div>  public OrderCreatedV2 upcast(OrderCreatedV1 old) {</div>
@@ -1908,7 +1908,7 @@ So bleibt der Audit-Trail für Compliance lesbar, aber datenschutzkonform.
       <div>  }</div>
       <div>}</div>
     </div>
-    <div mt-1 text-xs flex items-center gap-2>
+    <div mt-0.5 text-xs flex items-center gap-2>
       <div i-carbon:idea text-blue-300 />
       <span opacity-70>On-the-fly Transformation beim Replay, alte Events bleiben unverändert</span>
     </div>
@@ -2237,10 +2237,6 @@ class: text-center
       • Eure Erfahrungen
     </div>
   </div>
-</div>
-
-<div v-click mt-8 text-sm opacity-60>
-  10 Minuten moderierte Diskussion
 </div>
 
 <!--
