@@ -960,9 +960,6 @@ Aber seht ihr `expectedVersion`? Das ist unser Schutz gegen Race Conditions.
 -->
 
 ---
-class: py-10
-glowSeed: 275
----
 
 # Code-Beispiel Teil 2: State Reconstruction
 
@@ -1085,10 +1082,6 @@ Lösung: Snapshots sind "Checkpoints" des kompletten States.
 [Quelle: Fowler: "Application State Storage"]
 -->
 
----
-class: py-10
-clicks: 8
-glowSeed: 300
 ---
 
 # Vor- und Nachteile: Die Trade-offs
@@ -1269,404 +1262,137 @@ Der zentrale Trade-off: Event Sourcing kauft uns Auditability und Flexibilität 
 -->
 
 ---
-class: py-10
-glowSeed: 310
----
 
-# GDPR & Event Sourcing: Crypto-Shredding
+# Saga Pattern: Verteilte Transaktionen
 
-<span>"Right to be Forgotten" mit unveränderlichen Events</span>
+<span>Event Sourcing in Microservices</span>
 
 <div mt-2 />
 
-<div
-  v-click
-  border="2 solid red-800" bg="red-800/20"
-  rounded-lg overflow-hidden mb-2
->
-  <div bg="red-800/40" px-2 py-1 flex items-center>
-    <div i-carbon:warning-alt text-red-300 text-lg mr-2 />
-    <span font-bold text-sm>Das Problem</span>
-  </div>
-  <div px-2 py-1.5>
-    <div text-xs mb-1>
-      GDPR Artikel 17: "Right to be Forgotten" - Nutzer können Löschung ihrer Daten verlangen
-    </div>
-    <div bg="red-900/30" rounded-lg p-1.5 text-xs>
-      <div flex items-center gap-2>
-        <div i-carbon:locked text-red-400 />
-        <span>Events sind unveränderlich - echtes Löschen widerspricht dem Pattern!</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div
-  v-click
-  border="2 solid green-800" bg="green-800/20"
-  rounded-lg overflow-hidden
->
-  <div bg="green-800/40" px-2 py-1 flex items-center>
-    <div i-carbon:security text-green-300 text-lg mr-2 />
-    <span font-bold text-sm>Lösung: Crypto-Shredding</span>
-  </div>
-  <div px-2 py-1.5>
-    <div grid grid-cols-2 gap-2>
-      <div>
-        <div text-xs font-semibold mb-0.5>Konzept</div>
-        <div font-mono text-xs bg="black/30" rounded-lg p-1.5>
-          <div text-blue-300>// Verschlüssele PII</div>
-          <div>Event: {</div>
-          <div>  userId: "user-123",</div>
-          <div text-yellow-300>  encrypted: encrypt(</div>
-          <div>    data: "Max Müller",</div>
-          <div>    key: userKey</div>
-          <div text-yellow-300>  )</div>
-          <div>}</div>
-        </div>
-      </div>
-      <div>
-        <div text-xs font-semibold mb-0.5>Löschen</div>
-        <div font-mono text-xs bg="black/30" rounded-lg p-1.5>
-          <div text-red-300>// Schlüssel löschen</div>
-          <div>delete(userKey);</div>
-          <div mt-1 text-green-400>// Event bleibt,</div>
-          <div text-green-400>// aber unleserlich!</div>
-          <div mt-1>encrypted: "j4k2..."</div>
-          <div text-zinc-500>// ✓ Irreversibel</div>
-        </div>
-      </div>
-    </div>
-    <div mt-1.5 flex flex-col gap-0.5 text-xs>
-      <div flex items-center gap-2>
-        <div i-carbon:checkmark-outline text-green-400 />
-        <span>1. Personenbezogene Daten (PII) mit User-spezifischem Schlüssel verschlüsseln</span>
-      </div>
-      <div flex items-center gap-2>
-        <div i-carbon:checkmark-outline text-green-400 />
-        <span>2. Bei Löschanfrage: Nur Schlüssel vernichten</span>
-      </div>
-      <div flex items-center gap-2>
-        <div i-carbon:checkmark-outline text-green-400 />
-        <span>3. Daten bleiben verschlüsselt, aber unwiderruflich unleserlich</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div v-click mt-2 bg="blue-800/20" border="2 solid blue-800" rounded-lg p-1.5>
-  <div flex items-center gap-2>
-    <div i-carbon:idea text-blue-300 text-lg />
-    <div text-xs>
-      <span font-semibold>Best Practice:</span> Trenne technische von fachlichen Daten. Nur PII verschlüsseln, Metadaten (Timestamps, Aggregate-IDs) bleiben lesbar für Audit-Zwecke.
-    </div>
-  </div>
-</div>
-<div absolute bottom-4 right-4 text-xs opacity-50>
-  Quelle: GDPR Art. 17; Microsoft Azure Security Patterns
-</div>
-
-<!--
-**Problem (30 Sek):**
-GDPR Artikel 17 gibt Nutzern das "Right to be Forgotten". Sie können verlangen, dass ihre Daten gelöscht werden.
-Aber Events sind unveränderlich - das ist ein Kernprinzip von Event Sourcing!
-Wie lösen wir diesen offensichtlichen Konflikt?
-
-**Lösung: Crypto-Shredding (90 Sek):**
-Die elegante Lösung heißt "Crypto-Shredding":
-
-1. **Verschlüsseln:** Wir verschlüsseln personenbezogene Daten (PII = Personally Identifiable Information) im Event mit einem User-spezifischen Schlüssel.
-   - Events enthalten dann nur verschlüsselte Blobs statt Klartextnamen.
-   - Der Schlüssel wird separat gespeichert (z.B. in einem Key Management Service).
-
-2. **"Löschen":** Wenn ein Nutzer Löschung verlangt:
-   - Wir löschen NICHT das Event (das würde das Pattern brechen).
-   - Wir löschen NUR den Verschlüsselungsschlüssel.
-
-3. **Ergebnis:** Die Events bleiben im Store, aber die verschlüsselten Daten sind unwiderruflich unleserlich.
-   - Aus Sicht der GDPR sind die Daten "gelöscht" - sie sind nicht mehr rekonstruierbar.
-   - Der Audit-Trail bleibt: Wir sehen DASS etwas passiert ist, aber nicht mehr WER betroffen war.
-
-**Best Practice (15 Sek):**
-Wichtig: Trennt technische von fachlichen Daten.
-- PII verschlüsseln: Namen, E-Mails, Adressen
-- Metadaten im Klartext: Timestamps, Aggregate-IDs, Betragsgrößen
-So bleibt der Audit-Trail für Compliance lesbar, aber datenschutzkonform.
--->
-
----
-class: py-10
-glowSeed: 315
----
-
-# Event Versioning: Schema Evolution
-
-<span>Wie ändern wir Events, wenn alte Versionen bereits gespeichert sind?</span>
-
-<div mt-2 />
-
-<div grid grid-cols-2 gap-2 items-start>
+<div grid grid-cols-2 gap-4>
   <div
     v-click
-    h-full
-    border="2 solid yellow-800" bg="yellow-800/20"
+    border="2 solid red-800" bg="red-800/20"
     rounded-lg overflow-hidden
   >
-    <div bg="yellow-800/40" px-2 py-1 flex items-center>
-      <div i-carbon:warning-alt text-yellow-300 text-lg mr-2 />
+    <div bg="red-800/40" px-3 py-1.5 flex items-center>
+      <div i-carbon:warning-alt text-red-300 text-lg mr-2 />
       <span font-bold text-sm>Das Problem</span>
     </div>
-    <div px-2 py-1>
-      <div font-mono text-xs bg="black/30" rounded-lg p-1.5>
-        <div text-green-300>// Version 1 (2023)</div>
-        <div>OrderCreated { customerId: string }</div>
-        <div text-blue-300>// Version 2 (2024)</div>
-        <div>OrderCreated {</div>
-        <div>  customerId: UUID</div>
-        <div text-yellow-300>  customerEmail: string  // Neu!</div>
-        <div>}</div>
+    <div px-3 py-2>
+      <div text-xs mb-2>
+        Wie koordinieren wir Transaktionen über mehrere Services hinweg?
       </div>
-      <div text-xs mt-1 opacity-70>
-        Alte Events fehlt das neue Feld
+      <div bg="red-900/30" rounded-lg p-2 text-xs>
+        <div flex items-center gap-2 mb-0.5>
+          <div i-carbon:close text-red-400 />
+          <span>Verteilte ACID-Transaktionen zu langsam</span>
+        </div>
+        <div flex items-center gap-2>
+          <div i-carbon:close text-red-400 />
+          <span>Zu fehleranfällig</span>
+        </div>
       </div>
     </div>
   </div>
 
   <div
     v-click
-    h-full
     border="2 solid green-800" bg="green-800/20"
     rounded-lg overflow-hidden
-    flex="~ col"
   >
-    <div bg="green-800/40" px-2 py-1 flex items-center>
-      <div i-carbon:renew text-green-300 text-lg mr-2 />
-      <span font-bold text-sm>Strategien</span>
+    <div bg="green-800/40" px-3 py-1.5 flex items-center>
+      <div i-carbon:checkmark-outline text-green-300 text-lg mr-2 />
+      <span font-bold text-sm>Die Lösung: Saga</span>
     </div>
-    <div px-2 py-1 flex="~ col 1" justify-center>
-      <div flex flex-col gap-1.5>
-        <div>
-          <div flex items-center gap-2>
-            <div i-carbon:upgrade text-blue-300 />
-            <span font-semibold text-xs>1. Upcasting</span>
-          </div>
-          <div text-xs opacity-70>Events beim Laden transformieren</div>
-        </div>
-        <div>
-          <div flex items-center gap-2>
-            <div i-carbon:version text-purple-300 />
-            <span font-semibold text-xs>2. Versioned Events</span>
-          </div>
-          <div text-xs opacity-70>Explizite Versionsnummer</div>
-        </div>
-        <div>
-          <div flex items-center gap-2>
-            <div i-carbon:copy-file text-green-300 />
-            <span font-semibold text-xs>3. Weak Schema</span>
-          </div>
-          <div text-xs opacity-70>Optionale Felder + Defaults</div>
+    <div px-3 py-2>
+      <div text-xs mb-2>
+        Sequenz von lokalen Transaktionen, koordiniert über Events
+      </div>
+      <div bg="green-900/30" rounded-lg p-2 text-xs>
+        <div>Bei Fehler: Kompensierende Transaktionen</div>
+        <div mt-1 text-yellow-300>
+          ⚠️ Kompensationen sind NEUE Events, nicht Rückgängig-machen!
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<div v-click mt-2 border="2 solid blue-800" bg="blue-800/20" rounded-lg overflow-hidden>
-  <div bg="blue-800/40" px-2 py-1 font-bold text-sm>Upcasting Beispiel</div>
-  <div px-2 py-1>
-    <div font-mono text-xs bg="black/30" rounded-lg p-1.5>
-      <div text-green-300>// Event Upcaster</div>
-      <div>public class OrderCreatedUpcaster {</div>
-      <div>  public OrderCreatedV2 upcast(OrderCreatedV1 old) {</div>
-      <div>    return new OrderCreatedV2(</div>
-      <div>      old.customerId,</div>
-      <div text-blue-300>      "unknown@example.com"  // Default</div>
-      <div>    );</div>
-      <div>  }</div>
-      <div>}</div>
+<div v-click mt-3 grid grid-cols-2 gap-3>
+  <div border="2 solid blue-800" bg="blue-800/20" rounded-lg overflow-hidden>
+    <div bg="blue-800/40" px-2 py-1 font-bold text-xs>Erfolgsfall</div>
+    <div px-2 py-2>
+      <div font-mono text-xs bg="black/30" rounded-lg p-1.5>
+        <div text-green-400>1. OrderCreated</div>
+        <div text-green-400>2. PaymentProcessed</div>
+        <div text-green-400>3. ItemsShipped</div>
+        <div mt-1 text-zinc-500>✓ Alles erfolgreich</div>
+      </div>
     </div>
-    <div mt-1 text-xs flex items-center gap-2>
-      <div i-carbon:idea text-blue-300 />
-      <span opacity-70>On-the-fly Transformation beim Replay, alte Events bleiben unverändert</span>
+  </div>
+
+  <div border="2 solid yellow-800" bg="yellow-800/20" rounded-lg overflow-hidden>
+    <div bg="yellow-800/40" px-2 py-1 font-bold text-xs>Fehlerfall mit Kompensation</div>
+    <div px-2 py-2>
+      <div font-mono text-xs bg="black/30" rounded-lg p-1.5>
+        <div text-green-400>1. OrderCreated</div>
+        <div text-green-400>2. PaymentProcessed</div>
+        <div text-red-400>3. ShippingFailed ❌</div>
+        <div mt-1 text-yellow-400>→ PaymentRefunded</div>
+        <div text-yellow-400>→ OrderCancelled</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div v-click mt-4 text-center>
+  <div bg="purple-800/20" border="1 solid purple-800" rounded-lg p-2 inline-block>
+    <div flex items-center gap-2 text-xs>
+      <div i-carbon:presentation-file text-purple-300 />
+      <span>Details zu Sagas & Verteilten Systemen: Vortrag am 12.12.</span>
     </div>
   </div>
 </div>
 <div absolute bottom-4 right-4 text-xs opacity-50>
-  Quelle: Stopford Ch. 13; Axon Framework Docs
+  Quelle: Ben Stopford; Chris Richardson
 </div>
 
 <!--
 **Problem (30 Sek):**
-Requirements ändern sich. Ihr habt 2023 OrderCreated-Events mit nur customerId gespeichert.
-2024 braucht ihr plötzlich auch die customerEmail.
-Aber die alten Events im Store haben dieses Feld nicht!
-Ihr könnt sie nicht ändern (immutable), aber euer Code erwartet das neue Format.
+Wir kommen zu einem der schwierigsten Probleme in verteilten Systemen: Transaktionen. In einem Monolithen ist das einfach – `BEGIN TRANSACTION`, `COMMIT`, fertig. ACID regelt das.
+Aber in Microservices? Wir können keine verteilten ACID-Transaktionen über mehrere Services spannen. Das ist zu langsam (Latenz) und zu fehleranfällig (Single Point of Failure). Wir brauchen also einen anderen Weg.
 
-**Strategien (60 Sek):**
+**Die Lösung: Saga Pattern (60 Sek):**
+Hier kommt das Saga Pattern ins Spiel. Statt einer großen Transaktion haben wir eine Sequenz von *lokalen* Transaktionen. Jeder Schritt wird durch ein Event ausgelöst.
 
-1. **Upcasting:** Die häufigste Strategie.
-   - Beim Laden aus dem Store transformieren wir alte Events automatisch ins neue Format.
-   - Ein "Upcaster" mapped V1 → V2.
-   - Wichtig: Die Events im Store bleiben unverändert, die Transformation passiert on-the-fly.
+Nehmen wir unser E-Commerce Beispiel:
+1. Der Order-Service erstellt die Bestellung → `OrderCreated`.
+2. Der Payment-Service hört das, bucht ab → `PaymentProcessed`.
+3. Der Shipping-Service hört das, versendet → `ItemsShipped`.
+Im Erfolgsfall ist das eine saubere Kette.
 
-2. **Versioned Events:** Explizite Versionierung.
-   - Events haben ein `version`-Feld.
-   - Code kann mit mehreren Versionen umgehen (`if (event.version == 1) { ... }`).
-   - Macht den Code komplexer, aber expliziter.
+Aber was, wenn der Versand fehlschlägt? Wir können die Zeit nicht zurückdrehen.
+Stattdessen führen wir **kompensierende Transaktionen** aus.
+- Shipping schlägt fehl → `ShippingFailed`.
+- Payment-Service hört das → führt Refund durch → `PaymentRefunded`.
+- Order-Service hört das → storniert Bestellung → `OrderCancelled`.
 
-3. **Weak Schema:** Felder optional machen.
-   - Alle neuen Felder sind nullable/optional mit sinnvollen Defaults.
-   - Einfachste Lösung, aber semantisch manchmal schwierig.
+WICHTIG: Kompensation bedeutet nicht "Löschen" oder "Undo" im klassischen Sinn. Wir erzeugen *neue* Events, die den Effekt der vorherigen logisch ausgleichen. Die Historie bleibt bestehen – wir sehen, dass bestellt, bezahlt und dann erstattet wurde.
 
-**Code-Beispiel (30 Sek):**
-Beim Upcasting schreiben wir einen kleinen Transformer:
-- Alte Events werden beim Replay durch den Upcaster gejagt.
-- Fehlende Felder bekommen Defaults (z.B. "unknown@example.com").
-- Der Application-Code sieht nur noch die neue Version.
+**Koordination (15 Sek):**
+Es gibt zwei Arten, Sagas zu koordinieren:
+1. **Choreographie:** Dezentral, Services reagieren auf Events (wie beim Tanz).
+2. **Orchestrierung:** Ein zentraler Manager steuert den Ablauf.
+Details dazu im Deep-Dive am 12.12.
 
-**Best Practice:** Kombiniere Strategien - Upcasting für Breaking Changes, Weak Schema für Additions.
+**Warum Event Sourcing? (30 Sek):**
+Das ist der entscheidende Punkt: **Event Sourcing ist die perfekte Basis für Sagas.**
+1. **Kommunikation:** Events sind bereits die Sprache unseres Systems.
+2. **Historie:** Für Kompensationen müssen wir wissen, was genau passiert ist. Der Event Store liefert uns diesen Audit-Trail "gratis".
+3. **Debugging:** Wenn eine Saga klemmt, haben wir die komplette Historie im Store und können genau sehen, wo es gehakt hat.
 -->
 
----
-class: py-10
-glowSeed: 320
----
-
-# Testing Event-Sourced Systems
-
-<span>Testen von Events, Projektionen und Read Models</span>
-
-<div mt-2 />
-
-<div grid grid-cols-2 gap-2 items-start>
-  <div
-    v-click
-    h-full
-    border="2 solid blue-800" bg="blue-800/20"
-    rounded-lg overflow-hidden
-  >
-    <div bg="blue-800/40" px-2 py-1 flex items-center>
-      <div i-carbon:test-tool text-blue-300 text-lg mr-2 />
-      <span font-bold text-sm>Given-When-Then</span>
-    </div>
-    <div px-2 py-1>
-      <div font-mono text-xs bg="black/30" rounded-lg p-1.5>
-        <div text-green-300>// Aggregate Test</div>
-        <div>@Test void cancelOrder() {</div>
-        <div text-yellow-300>  given(</div>
-        <div>    OrderCreated(...),</div>
-        <div>    PaymentReceived(...)</div>
-        <div text-yellow-300>  ).when(</div>
-        <div>    CancelOrderCommand(id)</div>
-        <div text-yellow-300>  ).expectEvents(</div>
-        <div>    OrderCancelled(...)</div>
-        <div>  );</div>
-        <div>}</div>
-      </div>
-      <div text-xs mt-1 opacity-70>
-        Events abspielen → Command → Events prüfen
-      </div>
-    </div>
-  </div>
-
-  <div
-    v-click
-    h-full
-    border="2 solid green-800" bg="green-800/20"
-    rounded-lg overflow-hidden
-  >
-    <div bg="green-800/40" px-2 py-1 flex items-center>
-      <div i-carbon:view text-green-300 text-lg mr-2 />
-      <span font-bold text-sm>Projection Testing</span>
-    </div>
-    <div px-2 py-1>
-      <div font-mono text-xs bg="black/30" rounded-lg p-1.5>
-        <div text-green-300>// Projection Test</div>
-        <div>@Test void orderView() {</div>
-        <div text-yellow-300>  givenEvents(</div>
-        <div>    OrderCreated(id, ...),</div>
-        <div>    ItemAdded(...)</div>
-        <div text-yellow-300>  ).whenProjected()</div>
-        <div text-yellow-300>  .expectView(</div>
-        <div>    OrderView(id, [item1])</div>
-        <div>  );</div>
-        <div>}</div>
-      </div>
-      <div text-xs mt-1 opacity-70>
-        Events → Projektion → Read Model prüfen
-      </div>
-    </div>
-  </div>
-</div>
-
-<div v-click mt-2 grid grid-cols-3 gap-2>
-  <div border="1 solid purple-700" bg="purple-800/20" rounded-lg p-1.5>
-    <div flex items-center gap-2 mb-0.5>
-      <div i-carbon:network-3 text-purple-300 />
-      <span font-semibold text-xs>Integration Tests</span>
-    </div>
-    <div text-xs opacity-70>Testcontainers für Store + DB</div>
-  </div>
-  <div border="1 solid orange-700" bg="orange-800/20" rounded-lg p-1.5>
-    <div flex items-center gap-2 mb-0.5>
-      <div i-carbon:data-backup text-orange-300 />
-      <span font-semibold text-xs>Replay Tests</span>
-    </div>
-    <div text-xs opacity-70>Production Events abspielen</div>
-  </div>
-  <div border="1 solid cyan-700" bg="cyan-800/20" rounded-lg p-1.5>
-    <div flex items-center gap-2 mb-0.5>
-      <div i-carbon:purchase text-cyan-300 />
-      <span font-semibold text-xs>Property-Based</span>
-    </div>
-    <div text-xs opacity-70>Invarianten über Sequenzen</div>
-  </div>
-</div>
-
-<div v-click mt-2 bg="yellow-800/20" border="2 solid yellow-800" rounded-lg p-1.5>
-  <div flex items-center gap-2>
-    <div i-carbon:idea text-yellow-300 text-lg />
-    <div text-xs>
-      <span font-semibold>Vorteil:</span> Deterministisch - gleiche Events = gleiches Ergebnis. Kein DB-Mocking!
-    </div>
-  </div>
-</div>
-<div absolute bottom-4 right-4 text-xs opacity-50>
-  Quelle: Axon Testing; Microsoft Testing Guide
-</div>
-
-<!--
-**Given-When-Then (45 Sek):**
-Event Sourcing eignet sich hervorragend für Given-When-Then Tests:
-
-- **Given:** Wir spielen eine Sequenz historischer Events ab (Test Setup).
-- **When:** Wir führen ein Command aus.
-- **Then:** Wir prüfen, welche Events erzeugt wurden.
-
-Das ist extrem klar und testbar. Frameworks wie Axon haben das bereits eingebaut.
-Kein komplexes DB-Mocking nötig - wir können Events einfach in-memory abspielen.
-
-**Projection Testing (30 Sek):**
-Projektionen sind pure Funktionen: Events rein → State raus.
-Wir testen:
-1. Events einspeisen
-2. Projection durchlaufen lassen
-3. Resultierenden Read Model-State prüfen
-
-Super einfach zu testen, weil deterministisch.
-
-**Weitere Test-Strategien (30 Sek):**
-
-- **Integration Tests:** Mit Testcontainers können wir echte Event Stores + Projektions-DBs hochfahren.
-- **Replay Tests:** Production Events in Test-Umgebung abspielen - echtes Debugging!
-- **Property-Based Testing:** Invarianten über beliebige Event-Sequenzen testen (z.B. "Kontostand darf nie negativ werden").
-
-**Der große Vorteil:** Determinismus. Gleiche Event-Sequenz = immer gleiches Ergebnis. Flaky Tests sind selten.
--->
-
----
-class: py-10
-glowSeed: 323
 ---
 
 # Migration Pattern: Strangler Fig
@@ -1809,144 +1535,6 @@ Sobald wir Vertrauen haben: Legacy-Writes abschalten, Feature für Feature.
 **Vorteil:** Inkrementell, rollback-fähig, geringes Risiko.
 -->
 
----
-class: py-10
-glowSeed: 325
----
-
-# Saga Pattern: Verteilte Transaktionen
-
-<span>Event Sourcing in Microservices</span>
-
-<div mt-2 />
-
-<div grid grid-cols-2 gap-4>
-  <div
-    v-click
-    border="2 solid red-800" bg="red-800/20"
-    rounded-lg overflow-hidden
-  >
-    <div bg="red-800/40" px-3 py-1.5 flex items-center>
-      <div i-carbon:warning-alt text-red-300 text-lg mr-2 />
-      <span font-bold text-sm>Das Problem</span>
-    </div>
-    <div px-3 py-2>
-      <div text-xs mb-2>
-        Wie koordinieren wir Transaktionen über mehrere Services hinweg?
-      </div>
-      <div bg="red-900/30" rounded-lg p-2 text-xs>
-        <div flex items-center gap-2 mb-0.5>
-          <div i-carbon:close text-red-400 />
-          <span>Verteilte ACID-Transaktionen zu langsam</span>
-        </div>
-        <div flex items-center gap-2>
-          <div i-carbon:close text-red-400 />
-          <span>Zu fehleranfällig</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div
-    v-click
-    border="2 solid green-800" bg="green-800/20"
-    rounded-lg overflow-hidden
-  >
-    <div bg="green-800/40" px-3 py-1.5 flex items-center>
-      <div i-carbon:checkmark-outline text-green-300 text-lg mr-2 />
-      <span font-bold text-sm>Die Lösung: Saga</span>
-    </div>
-    <div px-3 py-2>
-      <div text-xs mb-2>
-        Sequenz von lokalen Transaktionen, koordiniert über Events
-      </div>
-      <div bg="green-900/30" rounded-lg p-2 text-xs>
-        <div>Bei Fehler: Kompensierende Transaktionen</div>
-        <div mt-1 text-yellow-300>
-          ⚠️ Kompensationen sind NEUE Events, nicht Rückgängig-machen!
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div v-click mt-3 grid grid-cols-2 gap-3>
-  <div border="2 solid blue-800" bg="blue-800/20" rounded-lg overflow-hidden>
-    <div bg="blue-800/40" px-2 py-1 font-bold text-xs>Erfolgsfall</div>
-    <div px-2 py-2>
-      <div font-mono text-xs bg="black/30" rounded-lg p-1.5>
-        <div text-green-400>1. OrderCreated</div>
-        <div text-green-400>2. PaymentProcessed</div>
-        <div text-green-400>3. ItemsShipped</div>
-        <div mt-1 text-zinc-500>✓ Alles erfolgreich</div>
-      </div>
-    </div>
-  </div>
-
-  <div border="2 solid yellow-800" bg="yellow-800/20" rounded-lg overflow-hidden>
-    <div bg="yellow-800/40" px-2 py-1 font-bold text-xs>Fehlerfall mit Kompensation</div>
-    <div px-2 py-2>
-      <div font-mono text-xs bg="black/30" rounded-lg p-1.5>
-        <div text-green-400>1. OrderCreated</div>
-        <div text-green-400>2. PaymentProcessed</div>
-        <div text-red-400>3. ShippingFailed ❌</div>
-        <div mt-1 text-yellow-400>→ PaymentRefunded</div>
-        <div text-yellow-400>→ OrderCancelled</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div v-click mt-4 text-center>
-  <div bg="purple-800/20" border="1 solid purple-800" rounded-lg p-2 inline-block>
-    <div flex items-center gap-2 text-xs>
-      <div i-carbon:presentation-file text-purple-300 />
-      <span>Details zu Sagas & Verteilten Systemen: Vortrag am 12.12.</span>
-    </div>
-  </div>
-</div>
-<div absolute bottom-4 right-4 text-xs opacity-50>
-  Quelle: Ben Stopford; Chris Richardson
-</div>
-
-<!--
-**Problem (30 Sek):**
-Wir kommen zu einem der schwierigsten Probleme in verteilten Systemen: Transaktionen. In einem Monolithen ist das einfach – `BEGIN TRANSACTION`, `COMMIT`, fertig. ACID regelt das.
-Aber in Microservices? Wir können keine verteilten ACID-Transaktionen über mehrere Services spannen. Das ist zu langsam (Latenz) und zu fehleranfällig (Single Point of Failure). Wir brauchen also einen anderen Weg.
-
-**Die Lösung: Saga Pattern (60 Sek):**
-Hier kommt das Saga Pattern ins Spiel. Statt einer großen Transaktion haben wir eine Sequenz von *lokalen* Transaktionen. Jeder Schritt wird durch ein Event ausgelöst.
-
-Nehmen wir unser E-Commerce Beispiel:
-1. Der Order-Service erstellt die Bestellung → `OrderCreated`.
-2. Der Payment-Service hört das, bucht ab → `PaymentProcessed`.
-3. Der Shipping-Service hört das, versendet → `ItemsShipped`.
-Im Erfolgsfall ist das eine saubere Kette.
-
-Aber was, wenn der Versand fehlschlägt? Wir können die Zeit nicht zurückdrehen.
-Stattdessen führen wir **kompensierende Transaktionen** aus.
-- Shipping schlägt fehl → `ShippingFailed`.
-- Payment-Service hört das → führt Refund durch → `PaymentRefunded`.
-- Order-Service hört das → storniert Bestellung → `OrderCancelled`.
-
-WICHTIG: Kompensation bedeutet nicht "Löschen" oder "Undo" im klassischen Sinn. Wir erzeugen *neue* Events, die den Effekt der vorherigen logisch ausgleichen. Die Historie bleibt bestehen – wir sehen, dass bestellt, bezahlt und dann erstattet wurde.
-
-**Koordination (15 Sek):**
-Es gibt zwei Arten, Sagas zu koordinieren:
-1. **Choreographie:** Dezentral, Services reagieren auf Events (wie beim Tanz).
-2. **Orchestrierung:** Ein zentraler Manager steuert den Ablauf.
-Details dazu im Deep-Dive am 12.12.
-
-**Warum Event Sourcing? (30 Sek):**
-Das ist der entscheidende Punkt: **Event Sourcing ist die perfekte Basis für Sagas.**
-1. **Kommunikation:** Events sind bereits die Sprache unseres Systems.
-2. **Historie:** Für Kompensationen müssen wir wissen, was genau passiert ist. Der Event Store liefert uns diesen Audit-Trail "gratis".
-3. **Debugging:** Wenn eine Saga klemmt, haben wir die komplette Historie im Store und können genau sehen, wo es gehakt hat.
--->
-
----
-class: py-10
-glowSeed: 350
 ---
 
 # Event Sourcing in der Praxis
@@ -2110,8 +1698,392 @@ Nutzt Event Sourcing dort, wo Audit-Trail kritisch ist - nicht überall.
 -->
 
 ---
-class: py-10
-glowSeed: 375
+
+# GDPR & Event Sourcing: Crypto-Shredding
+
+<span>"Right to be Forgotten" mit unveränderlichen Events</span>
+
+<div mt-2 />
+
+<div
+  v-click
+  border="2 solid red-800" bg="red-800/20"
+  rounded-lg overflow-hidden mb-2
+>
+  <div bg="red-800/40" px-2 py-1 flex items-center>
+    <div i-carbon:warning-alt text-red-300 text-lg mr-2 />
+    <span font-bold text-sm>Das Problem</span>
+  </div>
+  <div px-2 py-1.5>
+    <div text-xs mb-1>
+      GDPR Artikel 17: "Right to be Forgotten" - Nutzer können Löschung ihrer Daten verlangen
+    </div>
+    <div bg="red-900/30" rounded-lg p-1.5 text-xs>
+      <div flex items-center gap-2>
+        <div i-carbon:locked text-red-400 />
+        <span>Events sind unveränderlich - echtes Löschen widerspricht dem Pattern!</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  v-click
+  border="2 solid green-800" bg="green-800/20"
+  rounded-lg overflow-hidden
+>
+  <div bg="green-800/40" px-2 py-1 flex items-center>
+    <div i-carbon:security text-green-300 text-lg mr-2 />
+    <span font-bold text-sm>Lösung: Crypto-Shredding</span>
+  </div>
+  <div px-2 py-1.5>
+    <div grid grid-cols-2 gap-2>
+      <div>
+        <div text-xs font-semibold mb-0.5>Konzept</div>
+        <div font-mono text-xs bg="black/30" rounded-lg p-1.5>
+          <div text-blue-300>// Verschlüssele PII</div>
+          <div>Event: {</div>
+          <div>  userId: "user-123",</div>
+          <div text-yellow-300>  encrypted: encrypt(</div>
+          <div>    data: "Max Müller",</div>
+          <div>    key: userKey</div>
+          <div text-yellow-300>  )</div>
+          <div>}</div>
+        </div>
+      </div>
+      <div>
+        <div text-xs font-semibold mb-0.5>Löschen</div>
+        <div font-mono text-xs bg="black/30" rounded-lg p-1.5>
+          <div text-red-300>// Schlüssel löschen</div>
+          <div>delete(userKey);</div>
+          <div mt-1 text-green-400>// Event bleibt,</div>
+          <div text-green-400>// aber unleserlich!</div>
+          <div mt-1>encrypted: "j4k2..."</div>
+          <div text-zinc-500>// ✓ Irreversibel</div>
+        </div>
+      </div>
+    </div>
+    <div mt-1.5 flex flex-col gap-0.5 text-xs>
+      <div flex items-center gap-2>
+        <div i-carbon:checkmark-outline text-green-400 />
+        <span>1. Personenbezogene Daten (PII) mit User-spezifischem Schlüssel verschlüsseln</span>
+      </div>
+      <div flex items-center gap-2>
+        <div i-carbon:checkmark-outline text-green-400 />
+        <span>2. Bei Löschanfrage: Nur Schlüssel vernichten</span>
+      </div>
+      <div flex items-center gap-2>
+        <div i-carbon:checkmark-outline text-green-400 />
+        <span>3. Daten bleiben verschlüsselt, aber unwiderruflich unleserlich</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div v-click mt-2 bg="blue-800/20" border="2 solid blue-800" rounded-lg p-1.5>
+  <div flex items-center gap-2>
+    <div i-carbon:idea text-blue-300 text-lg />
+    <div text-xs>
+      <span font-semibold>Best Practice:</span> Trenne technische von fachlichen Daten. Nur PII verschlüsseln, Metadaten (Timestamps, Aggregate-IDs) bleiben lesbar für Audit-Zwecke.
+    </div>
+  </div>
+</div>
+<div absolute bottom-4 right-4 text-xs opacity-50>
+  Quelle: GDPR Art. 17; Microsoft Azure Security Patterns
+</div>
+
+<!--
+**Problem (30 Sek):**
+GDPR Artikel 17 gibt Nutzern das "Right to be Forgotten". Sie können verlangen, dass ihre Daten gelöscht werden.
+Aber Events sind unveränderlich - das ist ein Kernprinzip von Event Sourcing!
+Wie lösen wir diesen offensichtlichen Konflikt?
+
+**Lösung: Crypto-Shredding (90 Sek):**
+Die elegante Lösung heißt "Crypto-Shredding":
+
+1. **Verschlüsseln:** Wir verschlüsseln personenbezogene Daten (PII = Personally Identifiable Information) im Event mit einem User-spezifischen Schlüssel.
+   - Events enthalten dann nur verschlüsselte Blobs statt Klartextnamen.
+   - Der Schlüssel wird separat gespeichert (z.B. in einem Key Management Service).
+
+2. **"Löschen":** Wenn ein Nutzer Löschung verlangt:
+   - Wir löschen NICHT das Event (das würde das Pattern brechen).
+   - Wir löschen NUR den Verschlüsselungsschlüssel.
+
+3. **Ergebnis:** Die Events bleiben im Store, aber die verschlüsselten Daten sind unwiderruflich unleserlich.
+   - Aus Sicht der GDPR sind die Daten "gelöscht" - sie sind nicht mehr rekonstruierbar.
+   - Der Audit-Trail bleibt: Wir sehen DASS etwas passiert ist, aber nicht mehr WER betroffen war.
+
+**Best Practice (15 Sek):**
+Wichtig: Trennt technische von fachlichen Daten.
+- PII verschlüsseln: Namen, E-Mails, Adressen
+- Metadaten im Klartext: Timestamps, Aggregate-IDs, Betragsgrößen
+So bleibt der Audit-Trail für Compliance lesbar, aber datenschutzkonform.
+-->
+
+---
+
+# Event Versioning: Schema Evolution
+
+<span>Wie ändern wir Events, wenn alte Versionen bereits gespeichert sind?</span>
+
+<div mt-2 />
+
+<div grid grid-cols-2 gap-2 items-start>
+  <div
+    v-click
+    h-full
+    border="2 solid yellow-800" bg="yellow-800/20"
+    rounded-lg overflow-hidden
+  >
+    <div bg="yellow-800/40" px-2 py-1 flex items-center>
+      <div i-carbon:warning-alt text-yellow-300 text-lg mr-2 />
+      <span font-bold text-sm>Das Problem</span>
+    </div>
+    <div px-2 py-1>
+      <div font-mono text-xs bg="black/30" rounded-lg p-1.5>
+        <div text-green-300>// Version 1 (2023)</div>
+        <div>OrderCreated { customerId: string }</div>
+        <div text-blue-300>// Version 2 (2024)</div>
+        <div>OrderCreated {</div>
+        <div>  customerId: UUID</div>
+        <div text-yellow-300>  customerEmail: string  // Neu!</div>
+        <div>}</div>
+      </div>
+      <div text-xs mt-1 opacity-70>
+        Alte Events fehlt das neue Feld
+      </div>
+    </div>
+  </div>
+
+  <div
+    v-click
+    h-full
+    border="2 solid green-800" bg="green-800/20"
+    rounded-lg overflow-hidden
+    flex="~ col"
+  >
+    <div bg="green-800/40" px-2 py-1 flex items-center>
+      <div i-carbon:renew text-green-300 text-lg mr-2 />
+      <span font-bold text-sm>Strategien</span>
+    </div>
+    <div px-2 py-1 flex="~ col 1" justify-center>
+      <div flex flex-col gap-1.5>
+        <div>
+          <div flex items-center gap-2>
+            <div i-carbon:upgrade text-blue-300 />
+            <span font-semibold text-xs>1. Upcasting</span>
+          </div>
+          <div text-xs opacity-70>Events beim Laden transformieren</div>
+        </div>
+        <div>
+          <div flex items-center gap-2>
+            <div i-carbon:version text-purple-300 />
+            <span font-semibold text-xs>2. Versioned Events</span>
+          </div>
+          <div text-xs opacity-70>Explizite Versionsnummer</div>
+        </div>
+        <div>
+          <div flex items-center gap-2>
+            <div i-carbon:copy-file text-green-300 />
+            <span font-semibold text-xs>3. Weak Schema</span>
+          </div>
+          <div text-xs opacity-70>Optionale Felder + Defaults</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div v-click mt-2 border="2 solid blue-800" bg="blue-800/20" rounded-lg overflow-hidden>
+  <div bg="blue-800/40" px-2 py-1 font-bold text-sm>Upcasting Beispiel</div>
+  <div px-2 py-1>
+    <div font-mono text-xs bg="black/30" rounded-lg p-1.5>
+      <div text-green-300>// Event Upcaster</div>
+      <div>public class OrderCreatedUpcaster {</div>
+      <div>  public OrderCreatedV2 upcast(OrderCreatedV1 old) {</div>
+      <div>    return new OrderCreatedV2(</div>
+      <div>      old.customerId,</div>
+      <div text-blue-300>      "unknown@example.com"  // Default</div>
+      <div>    );</div>
+      <div>  }</div>
+      <div>}</div>
+    </div>
+    <div mt-1 text-xs flex items-center gap-2>
+      <div i-carbon:idea text-blue-300 />
+      <span opacity-70>On-the-fly Transformation beim Replay, alte Events bleiben unverändert</span>
+    </div>
+  </div>
+</div>
+<div absolute bottom-4 right-4 text-xs opacity-50>
+  Quelle: Stopford Ch. 13; Axon Framework Docs
+</div>
+
+<!--
+**Problem (30 Sek):**
+Requirements ändern sich. Ihr habt 2023 OrderCreated-Events mit nur customerId gespeichert.
+2024 braucht ihr plötzlich auch die customerEmail.
+Aber die alten Events im Store haben dieses Feld nicht!
+Ihr könnt sie nicht ändern (immutable), aber euer Code erwartet das neue Format.
+
+**Strategien (60 Sek):**
+
+1. **Upcasting:** Die häufigste Strategie.
+   - Beim Laden aus dem Store transformieren wir alte Events automatisch ins neue Format.
+   - Ein "Upcaster" mapped V1 → V2.
+   - Wichtig: Die Events im Store bleiben unverändert, die Transformation passiert on-the-fly.
+
+2. **Versioned Events:** Explizite Versionierung.
+   - Events haben ein `version`-Feld.
+   - Code kann mit mehreren Versionen umgehen (`if (event.version == 1) { ... }`).
+   - Macht den Code komplexer, aber expliziter.
+
+3. **Weak Schema:** Felder optional machen.
+   - Alle neuen Felder sind nullable/optional mit sinnvollen Defaults.
+   - Einfachste Lösung, aber semantisch manchmal schwierig.
+
+**Code-Beispiel (30 Sek):**
+Beim Upcasting schreiben wir einen kleinen Transformer:
+- Alte Events werden beim Replay durch den Upcaster gejagt.
+- Fehlende Felder bekommen Defaults (z.B. "unknown@example.com").
+- Der Application-Code sieht nur noch die neue Version.
+
+**Best Practice:** Kombiniere Strategien - Upcasting für Breaking Changes, Weak Schema für Additions.
+-->
+
+---
+
+# Testing Event-Sourced Systems
+
+<span>Testen von Events, Projektionen und Read Models</span>
+
+<div mt-2 />
+
+<div grid grid-cols-2 gap-2 items-start>
+  <div
+    v-click
+    h-full
+    border="2 solid blue-800" bg="blue-800/20"
+    rounded-lg overflow-hidden
+  >
+    <div bg="blue-800/40" px-2 py-1 flex items-center>
+      <div i-carbon:test-tool text-blue-300 text-lg mr-2 />
+      <span font-bold text-sm>Given-When-Then</span>
+    </div>
+    <div px-2 py-1>
+      <div font-mono text-xs bg="black/30" rounded-lg p-1.5>
+        <div text-green-300>// Aggregate Test</div>
+        <div>@Test void cancelOrder() {</div>
+        <div text-yellow-300>  fixture.given(</div>
+        <div>    new OrderCreated(...),</div>
+        <div>    new PaymentReceived(...)</div>
+        <div text-yellow-300>  )</div>
+        <div text-yellow-300>  .when(new CancelOrderCommand(id))</div>
+        <div text-yellow-300>  .expectEvents(</div>
+        <div>    new OrderCancelled(...)</div>
+        <div>  );</div>
+        <div>}</div>
+      </div>
+      <div text-xs mt-1 opacity-70>
+        Events abspielen → Command → Events prüfen
+      </div>
+    </div>
+  </div>
+
+  <div
+    v-click
+    h-full
+    border="2 solid green-800" bg="green-800/20"
+    rounded-lg overflow-hidden
+  >
+    <div bg="green-800/40" px-2 py-1 flex items-center>
+      <div i-carbon:view text-green-300 text-lg mr-2 />
+      <span font-bold text-sm>Projection Testing</span>
+    </div>
+    <div px-2 py-1>
+      <div font-mono text-xs bg="black/30" rounded-lg p-1.5>
+        <div text-green-300>// Projection Test</div>
+        <div>@Test void orderView() {</div>
+        <div text-yellow-300>  givenEvents(</div>
+        <div>    OrderCreated(id, ...),</div>
+        <div>    ItemAdded(...)</div>
+        <div text-yellow-300>  ).whenProjected()</div>
+        <div text-yellow-300>  .expectView(</div>
+        <div>    OrderView(id, [item1])</div>
+        <div>  );</div>
+        <div>}</div>
+      </div>
+      <div text-xs mt-1 opacity-70>
+        Events → Projektion → Read Model prüfen
+      </div>
+    </div>
+  </div>
+</div>
+
+<div v-click mt-2 grid grid-cols-3 gap-2>
+  <div border="1 solid purple-700" bg="purple-800/20" rounded-lg p-1.5>
+    <div flex items-center gap-2 mb-0.5>
+      <div i-carbon:network-3 text-purple-300 />
+      <span font-semibold text-xs>Integration Tests</span>
+    </div>
+    <div text-xs opacity-70>Testcontainers für Store + DB</div>
+  </div>
+  <div border="1 solid orange-700" bg="orange-800/20" rounded-lg p-1.5>
+    <div flex items-center gap-2 mb-0.5>
+      <div i-carbon:data-backup text-orange-300 />
+      <span font-semibold text-xs>Replay Tests</span>
+    </div>
+    <div text-xs opacity-70>Production Events abspielen</div>
+  </div>
+  <div border="1 solid cyan-700" bg="cyan-800/20" rounded-lg p-1.5>
+    <div flex items-center gap-2 mb-0.5>
+      <div i-carbon:purchase text-cyan-300 />
+      <span font-semibold text-xs>Property-Based</span>
+    </div>
+    <div text-xs opacity-70>Invarianten über Sequenzen</div>
+  </div>
+</div>
+
+<div v-click mt-2 bg="yellow-800/20" border="2 solid yellow-800" rounded-lg p-1.5>
+  <div flex items-center gap-2>
+    <div i-carbon:idea text-yellow-300 text-lg />
+    <div text-xs>
+      <span font-semibold>Vorteil:</span> Deterministisch - gleiche Events = gleiches Ergebnis. Kein DB-Mocking!
+    </div>
+  </div>
+</div>
+<div absolute bottom-4 right-4 text-xs opacity-50>
+  Quelle: Axon Testing; Microsoft Testing Guide
+</div>
+
+<!--
+**Given-When-Then (45 Sek):**
+Event Sourcing eignet sich hervorragend für Given-When-Then Tests:
+
+- **Given:** Wir spielen eine Sequenz historischer Events ab (Test Setup).
+- **When:** Wir führen ein Command aus.
+- **Then:** Wir prüfen, welche Events erzeugt wurden.
+
+Das ist extrem klar und testbar. Frameworks wie Axon haben das bereits eingebaut.
+Kein komplexes DB-Mocking nötig - wir können Events einfach in-memory abspielen.
+
+**Projection Testing (30 Sek):**
+Projektionen sind pure Funktionen: Events rein → State raus.
+Wir testen:
+1. Events einspeisen
+2. Projection durchlaufen lassen
+3. Resultierenden Read Model-State prüfen
+
+Super einfach zu testen, weil deterministisch.
+
+**Weitere Test-Strategien (30 Sek):**
+
+- **Integration Tests:** Mit Testcontainers können wir echte Event Stores + Projektions-DBs hochfahren.
+- **Replay Tests:** Production Events in Test-Umgebung abspielen - echtes Debugging!
+- **Property-Based Testing:** Invarianten über beliebige Event-Sequenzen testen (z.B. "Kontostand darf nie negativ werden").
+
+**Der große Vorteil:** Determinismus. Gleiche Event-Sequenz = immer gleiches Ergebnis. Flaky Tests sind selten.
+-->
+
 ---
 
 # Fazit: Wann Event Sourcing einsetzen?
