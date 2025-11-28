@@ -64,7 +64,132 @@ download: true
 <!--
 **Eröffnung (15 Sek):**
 Guten Tag! Heute möchte ich euch Event Sourcing vorstellen - ein Architekturmuster, das fundamental anders an Datenspeicherung herangeht als traditionelle Systeme.
+-->
 
+---
+class: py-10
+glowSeed: 95
+---
+
+# Gliederung
+
+<span>Roadmap für die nächsten 20 Minuten</span>
+
+<div mt-6 />
+
+<div grid grid-cols-2 gap-8 items-start>
+  <!-- Left Column: Grundlagen -->
+  <div v-click="1">
+    <div 
+      border="2 solid purple-800" bg="purple-800/20"
+      rounded-xl overflow-hidden
+      transform transition-all duration-500
+      :class="$clicks >= 1 ? 'translate-x-0 opacity-100' : '-translate-x-20 opacity-0'"
+    >
+      <div bg="purple-800/40" px-6 py-4 flex items-center gap-3>
+        <div i-carbon:concept text-purple-300 text-3xl />
+        <div>
+          <div font-bold text-xl>Grundlagen</div>
+          <div text-xs opacity-70 mt-0.5>Theorie & Konzepte</div>
+        </div>
+      </div>
+      <div px-6 py-5 flex flex-col gap-3>
+        <div flex items-start gap-3>
+          <div 
+            i-carbon:number-1 text-purple-300 text-xl
+            flex-shrink-0 mt-0.5
+          />
+          <div>
+            <div font-semibold>Problem mit CRUD</div>
+            <div text-xs opacity-70 mt-0.5>Warum traditionelle Systeme scheitern</div>
+          </div>
+        </div>
+        <div flex items-start gap-3>
+          <div 
+            i-carbon:number-2 text-purple-300 text-xl
+            flex-shrink-0 mt-0.5
+          />
+          <div>
+            <div font-semibold>Grundkonzepte & CQRS</div>
+            <div text-xs opacity-70 mt-0.5>Events, Store, Projektionen</div>
+          </div>
+        </div>
+        <div flex items-start gap-3>
+          <div 
+            i-carbon:number-3 text-purple-300 text-xl
+            flex-shrink-0 mt-0.5
+          />
+          <div>
+            <div font-semibold>Code-Beispiele</div>
+            <div text-xs opacity-70 mt-0.5>Events & State Reconstruction</div>
+          </div>
+        </div>
+        <div flex items-start gap-3>
+          <div 
+            i-carbon:number-4 text-purple-300 text-xl
+            flex-shrink-0 mt-0.5
+          />
+          <div>
+            <div font-semibold>Vor- & Nachteile</div>
+            <div text-xs opacity-70 mt-0.5>Trade-offs & Entscheidungshilfen</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Column: Praxis -->
+  <div v-click="2">
+    <div 
+      border="2 solid blue-800" bg="blue-800/20"
+      rounded-xl overflow-hidden
+      transform transition-all duration-500
+      :class="$clicks >= 2 ? 'translate-x-0 opacity-100' : 'translate-x-20 opacity-0'"
+    >
+      <div bg="blue-800/40" px-6 py-4 flex items-center gap-3>
+        <div i-carbon:application text-blue-300 text-3xl />
+        <div>
+          <div font-bold text-xl>Praxis</div>
+          <div text-xs opacity-70 mt-0.5>Patterns & Herausforderungen</div>
+        </div>
+      </div>
+      <div px-6 py-5 flex flex-col gap-3>
+        <div flex items-start gap-3>
+          <div 
+            i-carbon:number-5 text-blue-300 text-xl
+            flex-shrink-0 mt-0.5
+          />
+          <div>
+            <div font-semibold>Anwendungsmuster</div>
+            <div text-xs opacity-70 mt-0.5>Sagas, Migration, Frameworks</div>
+          </div>
+        </div>
+        <div flex items-start gap-3>
+          <div 
+            i-carbon:number-6 text-blue-300 text-xl
+            flex-shrink-0 mt-0.5
+          />
+          <div>
+            <div font-semibold>Detail-Probleme</div>
+            <div text-xs opacity-70 mt-0.5>GDPR, Versioning, Testing</div>
+          </div>
+        </div>
+        <div flex items-start gap-3>
+          <div 
+            i-carbon:number-7 text-blue-300 text-xl
+            flex-shrink-0 mt-0.5
+          />
+          <div>
+            <div font-semibold>Fazit: Wann einsetzen?</div>
+            <div text-xs opacity-70 mt-0.5>Entscheidungskriterien</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--
 **Why (45 Sek):**
 Warum ist das relevant? Stellen wir uns vor: Ein Kunde ruft bei einer Bank an und sagt, sein Kontostand sei falsch. Mit traditionellen CRUD-Systemen sehen wir nur den aktuellen Wert - aber nicht, wie wir dorthin gekommen sind. Die Historie ist verloren. Bei regulatorischen Anforderungen, Audits oder Fehleranalysen ist das ein massives Problem.
 
